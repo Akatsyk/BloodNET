@@ -26,9 +26,18 @@ bool __stdcall hooks::create_move(float input_sample_time, CUserCmd* cmd)
 	if (g_unload)
 		return orig_create_move(input_sample_time, cmd);
 
-	fake_ping::update_incoming_sequences();
+	if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
+		fake_ping::rehook();
+	else if (!g_pEngine->IsInGame() && !g_pEngine->IsConnected())
+	{
+		fake_ping::unhook();
+		fake_ping::get().sequence_records.clear();
+		g_sequence_rn = 0;
+	}
 
-	fake_ping::rehook();
+	//fake_ping::rehook();
+
+	fake_ping::update_incoming_sequences();
 
 	misc::get().radar();
 	misc::get().aspectratio();

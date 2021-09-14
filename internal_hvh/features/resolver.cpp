@@ -67,7 +67,6 @@ void resolver::resolve(C_CSPlayer* player, lag_record_t* record)
 		return;
 
 	const auto simtime = record->m_sim_time;
-	const auto old_simtime = player->get_oldsimtime();
 	const auto choked_ticks = record->m_lag - 1;
 	if (choked_ticks < 0)
 		return;
@@ -76,7 +75,7 @@ void resolver::resolve(C_CSPlayer* player, lag_record_t* record)
 	{
 		record->m_eye_angles.y = log.m_vecLastShotEyeAngles.y;
 		record->m_shot = true;
-		//return;
+		return;
 	}
 
 	record->m_eye_angles.y = math::normalize_float(log.m_flLowerBodyYawTarget);
@@ -111,9 +110,9 @@ void resolver::resolve(C_CSPlayer* player, lag_record_t* record)
 		log.m_iMode = RMODE_MOVING;//RMODE_WALL;
 	}
 
-	if (/*simtime*/old_simtime - log.m_flLastLowerBodyYawTargetUpdateTime > 1.35f && log.m_vecLastNonDormantOrig == record->m_origin && log.m_iMode == RMODE_MOVING)
+	if (simtime - log.m_flLastLowerBodyYawTargetUpdateTime > 1.35f && log.m_vecLastNonDormantOrig == record->m_origin && log.m_iMode == RMODE_MOVING)
 	{
-		if (/*simtime*/old_simtime - log.m_flLastLowerBodyYawTargetUpdateTime > 1.65f)
+		if (simtime - log.m_flLastLowerBodyYawTargetUpdateTime > 1.65f)
 		{
 			log.m_iMode = RMODE_WALL;
 		}
@@ -182,6 +181,8 @@ bool resolver::is_spin(player_log_t* log)
 	log->spindelta = (log->record[0].m_body - log->record[1].m_body) / log->record[1].m_lag;
 	log->spinbody = log->record[0].m_body;
 	const auto delta2 = (log->record[1].m_body - log->record[2].m_body) / log->record[2].m_lag;
+
+	return false;
 
 	return log->spindelta == delta2 && log->spindelta > 0.5f;
 }

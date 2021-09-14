@@ -12,33 +12,24 @@ void fake_ping::update(const ClientFrameStage_t stage)
 		prev_state = state;
 	}
 
-	if (stage == FRAME_START)
-		unhook();
+	//if (stage == FRAME_START)
+	//	unhook();
 }
 
 void fake_ping::reset()
 {
 	if (hooks::net_channel)
 	{
+
 		delete hooks::net_channel;
 		hooks::net_channel = nullptr;
 	}
 }
 
-void fake_ping::ping_spike(CNetChannel* net_channel/*, float latency*/)
+void fake_ping::ping_spike(CNetChannel* net_channel)
 {
-	//for (const auto& sequence : fake_ping::get().sequence_records)
-	//{
-	//	if (prediction::get().get_curtime() - sequence.time >= latency)
-	//	{
-	//		net_channel->m_nInReliableState = sequence.in_reliable_state;
-	//		net_channel->m_nInSequenceNr = sequence.in_sequence_num;
-	//		break;
-	//	}
-	//}
-
 	auto nci = g_pEngine->GetNetChannelInfo();
-	float in_latency = nci->GetLatency(0);
+	float out_latency = nci->GetLatency(FLOW_OUTGOING);
 	float aaa = 0.f;
 
 	if (vars.aim.ping_spike.get<bool>())
@@ -48,46 +39,22 @@ void fake_ping::ping_spike(CNetChannel* net_channel/*, float latency*/)
 		aaa = 160.f * 0.001f;
 
 	// amount of latency we want to achieve
-	float latency = 0.15f - (in_latency + g_pGlobals->frametime) - g_pGlobals->interval_per_tick;
+	float latency = 0.15f - (out_latency + g_pGlobals->frametime) - g_pGlobals->interval_per_tick;
 
-	if (g_pLocalPlayer && g_pLocalPlayer->get_alive())
+	// god this is autistic
+	for (auto& it : fake_ping::get().sequence_records)
 	{
-		// god this is autistic
-		for (auto& it : fake_ping::get().sequence_records)
-		{
-			float delta = prediction::get().get_curtime() - it.time;
+		float delta = prediction::get().get_curtime() - it.time;
 
-			if (delta >= latency) 
-			{
-				// apply latency
-				net_channel->m_nInReliableState = it.in_reliable_state;
-				net_channel->m_nInSequenceNr =  it.in_sequence_num;;
-				//net_channel->m_nInSequenceNr += 2 * (64 - 3) - static_cast<uint32_t>((64 - 3) * latency);
-				break;
-			}
+		if (delta >= latency) 
+		{
+			// apply latency
+			net_channel->m_nInReliableState = it.in_reliable_state;
+			net_channel->m_nInSequenceNr += 2 * 64 - (63 * aaa);
+			break;
 		}
 	}
-
-	//if (g_pLocalPlayer->get_health() < 1)
-	//	return;
-
-	//static auto oldseqnum = 0;
-
-	//if (oldseqnum == net_channel->m_nInSequenceNr)
-	//	return;
-
-	//oldseqnum = net_channel->m_nInSequenceNr;
-
-	//if (vars.aim.ping_spike.get<bool>())
-	//{
-	//	net_channel->m_nInSequenceNr += NET_FRAMES_MASK * 2 - static_cast<uint32_t>(NET_FRAMES_MASK * (vars.aim.ping_spike_amt.get<float>() / 1000.f));
-	//	return;
-	//}
-
-	//if (vars.aim.ping_spike_base.get<bool>())
-	//{
-	//	net_channel->m_nInSequenceNr += NET_FRAMES_MASK * 2 - static_cast<uint32_t>(NET_FRAMES_MASK * (160.f / 1000.f));
-	//}
+	
 }
 
 void fake_ping::update_incoming_sequences()
@@ -100,7 +67,7 @@ void fake_ping::update_incoming_sequences()
 	{
 		fake_ping::get().last_incoming_sequence = nci->m_nInSequenceNr;
 
-		fake_ping::get().sequence_records.push_front(sequence_t(nci->m_nInReliableState, /*nci->m_nOutReliableState TESTING*/ nci->m_nInReliableState, nci->m_nInSequenceNr, prediction::get().get_curtime()));
+		fake_ping::get().sequence_records.push_front(sequence_t(nci->m_nInReliableState, nci->m_nInReliableState, nci->m_nInSequenceNr, prediction::get().get_curtime()));
 	}
 
 	if (fake_ping::get().sequence_records.size() > 2048)
@@ -112,8 +79,13 @@ void fake_ping::unhook()
 	const auto clientstate = *reinterpret_cast<uintptr_t*>(g_pClientState);
 	if (clientstate && g_pEngine->IsInGame() && g_pClientState->m_NetChannel && !g_unload)
 		return;
-
+	
 	reset();
+
+	if (!g_pEngine->IsConnected() || !g_pEngine->IsInGame())
+	{
+		fake_ping::get().sequence_records.clear();
+	}
 }
 
 void fake_ping::rehook()

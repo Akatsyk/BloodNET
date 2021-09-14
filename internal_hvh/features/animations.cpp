@@ -52,7 +52,7 @@ void animations::update_local_animations()
 
 	if ( inlandanim && onground && wasonground )
 	{
-		thirdperson::get().get_tp_angle().x = -10.f;
+		thirdperson::get().get_tp_angle().x = -12.f;
 		thirdperson::get().get_tp_angle().y = g_pLocalPlayer->get_anim_state()->m_flGoalFeetYaw;
 	}
 

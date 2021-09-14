@@ -3,136 +3,6 @@
 
 void prediction::start()
 {
-	//if (!move_data)
-	//	move_data = std::malloc(182);
-
-	//auto player = g_pLocalPlayer;
-
-	//old_current_time = g_pGlobals->curtime;
-	//old_frame_time = g_pGlobals->frametime;
-
-	//g_pGlobals->curtime = player->get_tickbase() * g_pGlobals->interval_per_tick;
-	//g_pGlobals->frametime = *reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(n_interfaces::prediction) + 0x0A) ? 0 : g_pGlobals->interval_per_tick;
-
-	//if (!m_prediction_random_seed || !m_prediction_player)
-	//{
-	//	m_prediction_random_seed = *reinterpret_cast<int**>(n_utilities::find_pattern("client_panorama.dll", "A3 ? ? ? ? 66 0F 6E 86") + 0x1);
-	//	m_prediction_player = *reinterpret_cast<int**>(n_utilities::find_pattern("client_panorama.dll", "89 35 ? ? ? ? F3 0F 10 48") + 0x2);
-	//}
-
-	//// CPlayerMove::StartCommand
-	//{
-	//	*reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(player) + 0x3334) = reinterpret_cast <std::uint32_t>(g_cmd);
-
-	//	*m_prediction_random_seed = g_cmd ? g_cmd->random_seed : -1;
-	//	*m_prediction_player = reinterpret_cast<int>(player);
-	//}
-
-	//g_pMoveHelper->SetHost(player);
-
-	//g_pGameMovement->StartTrackPredictionErrors(player); // @BigMoneyBoss - (*(void (__thiscall **)(int *, _DWORD *))(game_movement + 12))(&game_movement, player);
-
-	//if (g_cmd->weapon_select != 0) 
-	//{
-	//	C_BaseCombatWeapon* weapon = reinterpret_cast<C_BaseCombatWeapon*>(n_interfaces::entity_list->get_client_entity(g_cmd->weapon_select));
-
-	//	if (weapon) 
-	//	{
-	//		CCSWeaponData* weapon_data = weapon->get_weapon_data();
-
-	//		if (weapon_data)
-	//			player->select_item(weapon_data->weapon_name, g_cmd->weapon_sub_type);
-	//	}
-	//}
-
-	//C_BaseEntity* vehicle = nullptr;
-
-	//if (player->get_h_vehicle().is_valid() /*&& player->get_h_vehicle( ).get( ) != nullptr*/)
-	//	vehicle = reinterpret_cast<C_BaseEntity*>(g_pEntitiyList->GetClientEntityFromHandle(player->get_h_vehicle()));
-
-	//if (g_cmd->impulse && (!vehicle || player->using_standard_weapons_in_vechile()))
-	//	*reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(player) + 0x31FC) = g_cmd->impulse;
-
-	//// CBasePlayer::UpdateButtonState
-	//{
-	//	g_cmd->buttons |= *reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(player) + 0x3330);
-
-	//	int m_nButtons = g_cmd->buttons;
-	//	int* m_afButtonLast = reinterpret_cast<int*>(reinterpret_cast<std::uint32_t>(player) + 0x31F8);
-	//	int buttonsChanged = m_nButtons ^ *m_afButtonLast;
-	//	*reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(player) + 0x31EC) = *m_afButtonLast;
-	//	*m_afButtonLast = m_nButtons;
-	//	*reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(player) + 0x31F0) = m_nButtons & buttonsChanged;
-	//	*reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(player) + 0x31F4) = buttonsChanged & ~m_nButtons;
-	//}
-
-	//g_pPrediction->check_moving_ground(player, g_pGlobals->frametime);
-
-	////player->set_local_view_angles(g_cmd->viewangles);
-	//g_pEngine->SetViewAngles(g_cmd->viewangles);
-
-	//// CPlayerMove::RunPreThink
-	//{
-	//	if (player->physics_run_think(0))
-	//		player->pre_think();
-	//}
-
-	//// CPlayerMove::RunThink
-	//{
-	//	int* thinktick = reinterpret_cast<int*>(reinterpret_cast<std::uint32_t>(player) + 0x0FC);
-	//	if (*thinktick != -1 && *thinktick > 0 && *thinktick <= player->get_tick_base()) {
-	//		*thinktick = -1;
-
-	//		static auto unknown_fn = reinterpret_cast<void(__thiscall*)(int)>(n_utilities::find_pattern("client_panorama.dll", "55 8B EC 56 57 8B F9 8B B7 ? ? ? ? 8B"));
-	//		unknown_fn(0);
-
-	//		player->think();
-	//	}
-	//}
-
-	//g_pPrediction->SetupMove(player, g_cmd, g_pMoveHelper, reinterpret_cast<CMoveData*>(move_data));
-
-	//if (vehicle)
-	//	n_utilities::get_virtual_function< void(__thiscall*)(int, C_CSPlayer*, void*) >(vehicle, 5)(reinterpret_cast<std::uint32_t>(vehicle), player, move_data);
-	//else
-	//	g_pGameMovement->process_movement(player, reinterpret_cast<CMoveData*>(move_data));
-
-	//g_pPrediction->FinishMove(player, g_cmd, reinterpret_cast<CMoveData*>(move_data));
-
-	//g_pMoveHelper->process_impacts();
-
-	//// CPlayerMove::RunPostThink
-	//{
-	//	auto post_think = [](C_CSPlayer* player) -> int
-	//	{
-	//		n_utilities::get_virtual_function< void(__thiscall*)(void*) >(n_interfaces::model_cache, 33)(n_interfaces::model_cache);
-
-	//		if (player->get_alive() /* index 155 for vfunc */ || *reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(player) + 0x3A81)) {
-	//			n_utilities::get_virtual_function< void(__thiscall*)(void*) >(player, 339)(player);
-
-	//			if (player->get_flags() & 1) // FL_ONGROUND
-	//				*reinterpret_cast<std::uintptr_t*>(std::uintptr_t(player) + 0x3014) = 0;
-
-	//			if (*reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(player) + 0x28BC) == -1)
-	//				n_utilities::get_virtual_function< void(__thiscall*)(void*, int) >(player, 218)(player, 0);
-
-	//			n_utilities::get_virtual_function< void(__thiscall*)(void*) >(player, 219)(player);
-
-	//			static auto post_think_v_physics = reinterpret_cast<bool(__thiscall*)(C_BaseEntity*)>(n_utilities::find_pattern("client_panorama.dll", "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 8B D9 56 57 83 BB"));
-	//			post_think_v_physics(player);
-	//		}
-
-	//		static auto simulate_player_simulated_entities = reinterpret_cast<bool(__thiscall*)(C_BaseEntity*)>(n_utilities::find_pattern("client_panorama.dll", "56 8B F1 57 8B BE ? ? ? ? 83 EF 01 78 72"));
-	//		simulate_player_simulated_entities(player);
-
-	//		return n_utilities::get_virtual_function< int(__thiscall*)(void*) >(n_interfaces::model_cache, 34)(n_interfaces::model_cache);
-	//	};
-
-	//	post_think(player);
-	//}
-	// 
-	// 
-	// 
 	static auto oldorigin = g_pLocalPlayer->get_origin();
 	unpred_vel = (g_pLocalPlayer->get_origin() - oldorigin) * (1.0 / g_pGlobals->interval_per_tick);
 	oldorigin = g_pLocalPlayer->get_origin();
@@ -166,35 +36,10 @@ void prediction::start()
 
 void prediction::finish() const
 {
-	//g_pGameMovement->FinishTrackPredictionErrors(g_pLocalPlayer);
-
-	//g_pMoveHelper->SetHost(0);
-
-	//g_pGameMovement->Reset();
-
-	//// CPlayerMove::FinishCommand
-	//{
-	//	*reinterpret_cast<std::uint32_t*>(reinterpret_cast<std::uint32_t>(g_pLocalPlayer) + 0x3334) = 0;
-
-	//	*m_prediction_random_seed = -1;
-	//	*prediction_player = 0;
-	//}
-
-	//if (g_pGlobals->frametime > 0.f)
-	//	g_pLocalPlayer->get_tickbase()++;
-
-	//g_pGlobals->curtime = orig_currtime;
-	//g_pGlobals->frametime = orig_frametime;
-	// 
-	// 
-	// 
 	g_pGameMovement->FinishTrackPredictionErrors( g_pLocalPlayer );
 	g_pMoveHelper->SetHost( nullptr );
 
 	*m_prediction_random_seed = -1;
-
-	if (g_pGlobals->frametime > 0.f)
-		g_pLocalPlayer->get_tickbase()++;
 
 	g_pGlobals->curtime = orig_currtime;
 	g_pGlobals->frametime = orig_frametime;

@@ -132,17 +132,6 @@ void visuals::player_info( const visual_data_t & player )
 			auto color = Color( vars.visuals.esp.weapon_color.get<D3DCOLOR>(), player.alpha );
 			render::get().text( Vector2D( player.top.x, player.top.y + player.height + 6 * elements++ ), player.weapon_name, color, fonts::esp_small, c_font::centered_x | c_font::drop_shadow );
 		}
-		if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
-		{
-			auto dLight = g_pEffects->CL_AllocDlight(player.player->EntIndex());
-			dLight->die = g_pGlobals->curtime + 0.1f;
-			dLight->radius = 200.f;
-			dLight->color = Color(200, 50, 10, 5);
-			
-			dLight->key = player.player->EntIndex();
-			dLight->decay = dLight->radius / 5.0f;
-			dLight->origin = player.player->get_origin() + Vector(0, 0, 2);
-		}
 	};
 
 	const auto info_left = [ & ]()
@@ -207,7 +196,19 @@ void visuals::player_info( const visual_data_t & player )
 	info_bottom();
 	info_top( player );
 
+	if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
+	{
+		if (!player.player)
+			return;
+		auto dLight = g_pEffects->CL_AllocDlight(player.player->EntIndex());
+		dLight->die = g_pGlobals->curtime + 0.1f;
+		dLight->radius = 200.f;
+		dLight->color = Color(200, 50, 10, 5);
 
+		dLight->key = player.player->EntIndex();
+		dLight->decay = dLight->radius / 5.0f;
+		dLight->origin = player.player->get_origin() + Vector(0, 0, 2);
+	}
 }
 
 bool visuals::bar_ping( const visual_data_t& player, int elements ) const
