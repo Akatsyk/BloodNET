@@ -739,11 +739,9 @@ void visuals::draw_scope()
 	auto observer = g_pLocalPlayer->get_observer();
 	static double alpha = 255.f;
 	if ( observer && observer->get_scoped() || g_pLocalPlayer->get_scoped() )
-		//alpha += 0.1f * g_pGlobals->framecount;
 		alpha += std::min(5.0, 255.0 - alpha);
 	else if (observer && !observer->get_scoped() || !g_pLocalPlayer->get_scoped())
 		alpha -= std::min(15.0, alpha);
-		//alpha -= 0.1f * g_pGlobals->framecount;
 
 	alpha = std::clamp(alpha, 0.0, 255.0);
 
