@@ -196,19 +196,19 @@ void visuals::player_info( const visual_data_t & player )
 	info_bottom();
 	info_top( player );
 
-	if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
-	{
-		if (!player.player)
-			return;
-		auto dLight = g_pEffects->CL_AllocDlight(player.player->EntIndex());
-		dLight->die = g_pGlobals->curtime + 0.1f;
-		dLight->radius = 200.f;
-		dLight->color = Color(200, 50, 10, 5);
+	//if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
+	//{
+	//	if (!player.player)
+	//		return;
+	//	auto dLight = g_pEffects->CL_AllocDlight(player.player->EntIndex());
+	//	dLight->die = g_pGlobals->curtime + 0.1f;
+	//	dLight->radius = 200.f;
+	//	dLight->color = Color(200, 50, 10, 5);
 
-		dLight->key = player.player->EntIndex();
-		dLight->decay = dLight->radius / 5.0f;
-		dLight->origin = player.player->get_origin() + Vector(0, 0, 2);
-	}
+	//	dLight->key = player.player->EntIndex();
+	//	dLight->decay = dLight->radius / 5.0f;
+	//	dLight->origin = player.player->get_origin() + Vector(0, 0, 2);
+	//}
 }
 
 bool visuals::bar_ping( const visual_data_t& player, int elements ) const
@@ -734,6 +734,9 @@ void visuals::world_esp()
 void visuals::draw_scope()
 {
 	if (!vars.misc.remove_scope.get<bool>())
+		return;
+
+	if (!g_pLocalPlayer || !g_pLocalPlayer->get_alive())
 		return;
 
 	auto observer = g_pLocalPlayer->get_observer();

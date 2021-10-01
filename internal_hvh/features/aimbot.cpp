@@ -66,15 +66,12 @@ lag_record_t* aimbot::find_first_record(player_log_t& log)
 {
 	lag_record_t* current;
 
-	for (auto i = 1; i < log.record.size(); i++) {
+	for (auto i = 1; i < log.record.size(); i++)
+	{
 		current = &log.record[i];
-
-		if (current->valid)
-			return current;
-		else
-			continue;
+		if (current->valid) return current;
+		else continue;
 	}
-
 	return nullptr;
 }
 
@@ -82,15 +79,12 @@ lag_record_t* aimbot::find_last_record(player_log_t& log)
 {
 	lag_record_t* current;
 
-	for (int i = log.record.size() - 1; i >= 0; i--) {
+	for (int i = log.record.size() - 1; i >= 0; i--)
+	{
 		current = &log.record[i];
-
-		if (current->valid)
-			return current;
-		else
-			continue;
+		if (current->valid) return current;
+		else continue;
 	}
-
 	return nullptr;
 }
 
@@ -171,7 +165,7 @@ void aimbot::scan_targets()
 			if (record.m_lby_flick)
 				flick_records.push_front(record);
 
-			// добавляем рекорды в которых петух фликает лбу.
+			// добавляем рекорды в которых петух фликает стреляет.
 			if (record.m_shot)
 				shot_records.push_front(record);
 		}
@@ -575,11 +569,8 @@ void aimbot::quick_stop()
 		max_speed = weapon->get_wpn_data()->flMaxPlayerSpeedAlt;
 	}
 
-	if (g_pLocalPlayer->get_flags() & FL_DUCKING)
-	{
-		max_speed /= 3.f;
-		accel /= 3.f;
-	}
+	// thx ida\\ // note - AkatsukiSun: thx nave <3.
+	max_speed = std::min< float >(max_speed, 250.f);
 
 	float surf_friction = 1.f;
 	float max_accelspeed = accel * g_pGlobals->interval_per_tick * max_speed * surf_friction;
@@ -594,9 +585,11 @@ void aimbot::quick_stop()
 	}
 
 	// Calculate the negative movement of our velocity, relative to our viewangles
-	Vector ndir = (vel * -1.f); math::get().vector_angles_2(ndir, ndir);
-	ndir.y = g_cmd->viewangles.y - ndir.y; // Relative to local view
-	math::get().angle_vectors(ndir, &ndir);
+	Vector ndir = (vel * -1.f);
+	QAngle angle; angle = QAngle(ndir.x, ndir.y, ndir.z);
+	math::get().vector_angles(ndir, angle);
+	ndir.y = g_cmd->viewangles.y - angle.y; // Relative to local view
+	math::get().angle_vectors(angle, &ndir);
 
 	g_cmd->forwardmove = ndir.x * wishspeed;
 	g_cmd->sidemove = ndir.y * wishspeed;
@@ -618,7 +611,7 @@ void aimbot::full_stop()
 	g_cmd->viewangles.Clamp();
 
 	float flMaxSpeed = g_pLocalPlayer->get_scoped() ? weapon->get_wpn_data()->flMaxPlayerSpeedAlt : weapon->get_wpn_data()->flMaxPlayerSpeed;
-	float flDesiredSpeed = flMaxSpeed * .3f;
+	float flDesiredSpeed = flMaxSpeed * .34f;
 
 	if (animstate->m_flSpeedNormalized <= flDesiredSpeed)
 	{
@@ -723,26 +716,26 @@ aimpoint_t aimbot::get_best_damage(lag_record_t& log, float& damage, Vector* pos
 	const auto is_knife = !is_zeus && get_weapon(g_pLocalPlayer->get_active_weapon())->get_weapon_type() == WEAPONTYPE_KNIFE;
 	const auto baim_when = !(log.m_flags & FL_ONGROUND) && get_config(weapon)->baim.air->get<bool>()
 		|| (player_log.m_iMode != RMODE_WALL && player_log.m_iMode != RMODE_DELTA) && get_config(weapon)->baim.resolver_unsure->get<bool>()
-		|| best_damage && get_config(weapon)->baim_mode->get<int>() == 1 && player_log.m_nShots >= 1
+		|| best_damage && get_config(weapon)->baim_mode->get<int>() == 1 && player_log.m_nSpreadShots >= 1
 		|| get_config(weapon)->baim.lethal->get<bool>() && best_damage >= player->get_health() + 4;
 repeat:
 
 	for (auto& point : points)
 	{
-		// нахуй нам сканить поинты, по которым мы не сможем стрелять? // note - AkatsukiSun: Сделаю это, когда уже добавлю GetShootPosition
+		// нахуй нам сканить поинты, по которым мы не сможем стрелять?
 		if ((g_pLocalPlayer->get_shoot_pos() - point.point).Length() > info->flRange)
 			continue;
 
 		// охуенный адаптив аимбот, чтобы умешьшить вероятность миссов до минимума.
-		//if (!is_knife && !is_zeus && get_config(weapon)->adaptive_scale->get<bool>()) 
-		//{
-		//	 if (point.hitbox >= HITBOX_RIGHT_THIGH && point.hitbox <= HITBOX_LEFT_FOREARM)
-		//	 {
-		//		// если дуралей фейкволкает - не сканим конечности.
-		//		if (log.m_fake_walk)
-		//			continue;
-		//	}
-		//}
+		if (!is_knife && !is_zeus && get_config(weapon)->adaptive_scale->get<bool>()) 
+		{
+			 if (point.hitbox >= HITBOX_RIGHT_THIGH && point.hitbox <= HITBOX_LEFT_FOREARM)
+			 {
+				// если дуралей фейкволкает - не сканим конечности.
+				if (log.m_fake_walk)
+					continue;
+			}
+		}
 
 		const auto dist = pos ? pos->Dist(point.point) : g_pLocalPlayer->get_shoot_pos().Dist(point.point);
 
@@ -756,7 +749,7 @@ repeat:
 		if (!is_knife && !penetration::get().can_hit(point.point, point_damage, g_pLocalPlayer->get_shoot_pos() /*TESTING  prediction::get().get_unpred_eyepos()*/))
 			continue;
 
-		if (!is_knife && point_damage <= get_config(weapon)->mindmg->get<float>() && point_damage <= player->get_health() + 1)
+		if (!is_knife && point_damage <= /*GetAsyncKeyState(vars.aim.override_damage.get<int>()) ? get_config(weapon)->ov_mindamage->get<float>() : */get_config(weapon)->mindmg->get<float>() && point_damage <= player->get_health() + 1)
 			continue;
 
 		if (is_zeus && point_damage < player->get_health() + 4 && dist > 180.f)
@@ -765,15 +758,7 @@ repeat:
 		if (is_knife)
 			point_damage = 100.f / dist;
 
-		if (baim_when)
-		{
-			best_point = point;
-			best_damage = point_damage;
-			prevhitbox = point.hitbox;
-			goto stop;
-		}
-
-		else if ((point_damage > best_damage && prevhitbox != point.hitbox || point_damage > best_damage + 30.f))
+		if ((point_damage > best_damage && prevhitbox != point.hitbox || point_damage > best_damage + 30.f) || baim_when)
 		{
 			best_point = point;
 			best_damage = point_damage;
@@ -781,7 +766,14 @@ repeat:
 		}
 	}
 
-stop:
+	if (!was_repeated && !baim_when)
+	{
+		points.clear();
+		multipoint_hitboxes(log, points, true);
+		was_repeated = true;
+		goto repeat;
+	}
+
 	backup.apply(player, true);
 
 	damage = best_damage;
@@ -809,142 +801,82 @@ void aimbot::multipoint_hitboxes(lag_record_t& log, std::vector<aimpoint_t>& poi
 	const auto weapon = get_weapon(g_pLocalPlayer->get_active_weapon());
 	const auto is_zeus = weapon->get_weapon_id() == WEAPON_TASER;
 	const auto is_knife = !is_zeus && weapon->get_weapon_type() == WEAPONTYPE_KNIFE;
-	const auto moving = log.m_anim_velocity.Length() > 0.1f && !log.m_fake_walk;
+	const auto moving = log.m_velocity.Length() > 0.1f;
 
 	for (auto i = 0; i < HITBOX_MAX; i++) 
 	{
 		if (is_knife && i != HITBOX_UPPER_CHEST)
 			continue;
 
-		if (!is_knife && !is_zeus && (!enabled_hitboxes[i]))
+		if (!is_knife && !is_zeus && !enabled_hitboxes[i])
 			continue;
 
 		auto hitbox = studio_hdr->pHitbox(i, 0);
 		if (!hitbox)
 			continue;
 
+		if (second_go && i > HITBOX_NECK)
+			continue;
+
+		if (!second_go && i <= HITBOX_NECK)
+			continue;
+
+		// щитаем скейлы.
+		auto scale = get_config(weapon)->scale->get<float>();
+		if (i == HITBOX_HEAD)
+			scale = get_config(weapon)->scale_head->get<float>();
+
+		scale = scale / 100.f;
+
 		auto& mat = log.matrix[hitbox->bone];
+		const auto mod = hitbox->radius != -1.f ? hitbox->radius : 0.f;
 		Vector min, max;
-		math::vector_transform(hitbox->bbmax, mat, max);
-		math::vector_transform(hitbox->bbmin, mat, min);
+		math::vector_transform(hitbox->bbmax + mod, mat, max);
+		math::vector_transform(hitbox->bbmin - mod, mat, min);
 
 		const auto center = (min + max) * 0.5f;
-
-		// нахуя мульты на зевсе?
-		if (is_zeus)
-			continue;
-
-		// нахуй мульты на ботов.
-		if (player->get_player_info().fakeplayer)
-			continue;
-
-		// если поц летит - то он прилетит ток на залупу, так что нахуй мульты.
-		if (!(log.m_flags & FL_ONGROUND))
-			continue;
-
-		// на эти хитбоксы мульты нахуй не нужны.
-		if (i >= HITBOX_RIGHT_THIGH && i <= HITBOX_LEFT_FOREARM)
-			continue;
-
 		const auto cur_angles = math::get().calc_angle(center, g_pLocalPlayer->get_shoot_pos());
 
 		Vector forward;
 		math::get().angle_vectors(cur_angles, &forward);
 
+		auto rs = hitbox->radius * scale;
+
 		// для ножа а чо.
-		if (is_knife) 
+		if (is_knife || is_zeus)
 		{
 			const auto back = forward * hitbox->radius;
 			points.emplace_back(center + back, center, i);
 			continue;
 		}
 
-		// щитаем скейлы.
-		auto rs = hitbox->radius * (get_config(weapon)->scale->get<float>() * .01f);
-		if (i == HITBOX_HEAD)
-		{
-			rs = hitbox->radius * (get_config(weapon)->scale_head->get<float>() * .01f);
-		}
+		// если поц летит - то он прилетит ток на залупу, так что нахуй мульты.
+		if (!(log.m_flags & FL_ONGROUND))
+			rs = .65f;
 
-		if (player_log.m_nShots < 4 && get_config(weapon)->adaptive_scale->get<bool>())
-			rs *= 1 - (player_log.m_nShots / 4);
+		// на эти хитбоксы мульты нахуй не нужны.
+		if (i >= HITBOX_RIGHT_THIGH && i <= HITBOX_LEFT_FOREARM)
+			continue;
+
+		// миссаем по сприду - умешьшаем скейлы.
+		if (player_log.m_nShots < 4)
+			rs *= 0.95f - (std::min(player_log.m_nShots, 3) * 0.25);
 
 		if (log.m_lby_flick)
 			rs *= 0.65f;
 
+		// какой смысл блять от скейлов < 0.05 если оно ничего кроме нагрузки пк сканами кучи безполезных точек не даст?
 		if (rs < .2f)
 			return;
 
-		const auto right = forward.Cross(Vector(0.f, 0.f, 1.f)) * rs;
+		const auto right = forward.Cross(Vector(0, 0, 1)) * rs;
 		const auto left = Vector(-right.x, -right.y, right.z);
-		const auto top = Vector(0.f, 0.f, 1.f) * rs;
+		const auto top = Vector(0, 0, 1) * rs;
 
-		const auto delta = (max - min).Normalize();
-		QAngle angle;
-		math::get().vector_angles(delta, angle);
-		angle -= cur_angles;
-		math::get().normalize(angle);
-
-		const auto is_horizontal = angle.x < 45.f && angle.x > -45.f;
-		const auto is_flipped = angle.y < 0.f;
-
-		if (i == HITBOX_HEAD || (i != HITBOX_LEFT_FOOT
-			&& i != HITBOX_RIGHT_FOOT))
-		{
-			points.emplace_back(max + top, center, i);
-			points.emplace_back(min - top, center, i);
-		}
-
-		points.emplace_back(max - (is_horizontal ? Vector() - top : left), center, i);
-		points.emplace_back(max - (is_horizontal ? is_flipped ? left : right : right), center, i);
-
-		if (i != HITBOX_LEFT_FOOT && i != HITBOX_RIGHT_FOOT)
-		{
-			points.emplace_back(min - (is_horizontal ? top : left), center, i);
-			points.emplace_back(min + (is_horizontal ? is_flipped ? left : right : left), center, i);
-		}
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		//const auto cur_angles = math::get().calc_angle(center, g_pLocalPlayer->get_shoot_pos());
-
-		//Vector forward;
-		//math::get().angle_vectors(cur_angles, &forward);
-
-		//// для ножа а чо.
-		//if (is_knife) 
-		//{
-		//	const auto back = forward * hitbox->radius;
-		//	points.emplace_back(center + back, center, i);
-		//	continue;
-		//}
-
-		//// щитаем скейлы.
-		//auto rs = hitbox->radius * (get_config(weapon)->scale->get<float>() * .01f);
-		//if (i == HITBOX_HEAD)
-		//{
-		//	rs = hitbox->radius * (get_config(weapon)->scale_head->get<float>() * .01f);
-		//}
-
-		//// миссаем по сприду - умешьшаем скейлы.
-		//if (player_log.m_nShots < 4)
-		//	rs *= 1 - (player_log.m_nShots / 4);
-
-		//if (log.m_lby_flick)
-		//	rs *= 0.65f;
-
-		//// какой смысл блять от скейлов < 0.2 если оно ничего кроме нагрузки пк сканами кучи безполезных точек не даст?
-		//if (rs < .2f)
-		//	continue;
-
-		//const auto right = forward.Cross(Vector(0, 0, 1)) * rs;
-		//const auto left = Vector(-right.x, -right.y, right.z);
-		//const auto top = Vector(0, 0, 1) * rs;
-
-		//if (i == HITBOX_HEAD)
-		//	points.emplace_back(center + top, center + top * 0.95f, i); // 0.65 край(credits: weave.su)
-		//points.emplace_back(center + right, center + top * 0.95f, i);
-		//points.emplace_back(center + left, center + top * 0.95f, i);
+		if(i == HITBOX_HEAD)
+			points.emplace_back(center + top, center, i);
+		points.emplace_back(center + right, center, i);
+		points.emplace_back(center + left, center, i);
 	}
 }
 
@@ -1125,101 +1057,4 @@ bool aimbot::calculate_hitchance(QAngle vangles, const aimpoint_t& point, C_CSPl
 			return false;
 	}
 	return (float)current / (float)total_seeds >= chance;
-
-	//auto weap = get_weapon(g_pLocalPlayer->get_active_weapon());
-	//if (!weap)
-	//	return false;
-
-	//auto chance = get_config(weap)->hitchance->get<float>();
-
-	//if (chance < 1.f)
-	//	return true;
-
-	//__(weapon_accuracy_nospread, "weapon_accuracy_nospread");
-	//static auto nospread = g_pCVar->FindVar(weapon_accuracy_nospread);
-
-	//// если сервак без сприда - хитшанс нам нахуй не нужен.
-	//if (nospread->get_bool())
-	//	return true;
-
-	//auto weap_data = weap->get_wpn_data();
-	//Vector forward, right, up;
-	//const auto eye_position = /*prediction::get().get_unpred_eyepos()*/g_pLocalPlayer->get_shoot_pos();
-	//const auto angles = vangles.Clamp();
-	//math::get().angle_vectors(angles, &forward, &right, &up);
-	//auto endpoint = point.center;
-
-	//int TraceHits = 0;
-	//int cNeededHits = weap->get_weapon_id() == WEAPON_TASER ? static_cast<int>(128.f /*TESTING 256 */ * (vars.aim.zeus_hc.get<float>() / 100.f)) : static_cast<int>(128.f /*TESTING 256*/ * (chance / 100.f));
-
-	////const auto backupvel = g_pLocalPlayer->get_velocity();
-	////const auto backupabsvel = g_pLocalPlayer->get_abs_velocity();
-	////g_pLocalPlayer->get_abs_velocity() = g_pLocalPlayer->get_velocity() = prediction::get().get_unpred_vel();
-	//weap->update_accuracy(); // note - AkatsukiSun: Idk, fatal do this, so i do it too
-	////g_pLocalPlayer->get_velocity() = backupvel;
-	////g_pLocalPlayer->get_abs_velocity() = backupabsvel;
-
-	//float weap_sir = weap->get_spread();
-	//float weap_inac = weap->get_inaccuracy();// +weap->get_accuracy_penalty();
-
-	//if (weap_sir <= 0.f)
-	//	return true;
-
-	//for (int i = 0; i < 128 /*TESTING 256*/; i++)
-	//{
-	//	float a = random_float(0.f, 1.f);
-	//	float b = random_float(0.f, 2.f * M_PI);
-	//	float c = random_float(0.f, 1.f);
-	//	float d = random_float(0.f, 2.f * M_PI);
-
-	//	float inac = a * weap_inac;
-	//	float sir = c * weap_sir;
-
-	//	if (weap->get_item_definiton_index() == WEAPON_REVOLVER)
-	//	{
-	//		a = 1.f - a * a;
-	//		a = 1.f - c * c;
-	//	}
-
-	//	// credits: haircuz
-	//	else if (!(g_pLocalPlayer->get_flags() & FL_ONGROUND) && weap->get_item_definiton_index() == WEAPON_SSG08)
-	//	{
-	//		if (weap->get_inaccuracy() < 0.009f)
-	//		{
-	//			return true;
-	//		}
-	//	}
-	//	Vector sirVec((cos(b) * inac) + (cos(d) * sir), (sin(b) * inac) + (sin(d) * sir), 0), direction;
-
-	//	direction.x = forward.x + (sirVec.x * right.x) + (sirVec.y * up.x);
-	//	direction.y = forward.y + (sirVec.x * right.y) + (sirVec.y * up.y);
-	//	direction.z = forward.z + (sirVec.x * right.z) + (sirVec.y * up.z);
-	//	direction.Normalize();
-
-	//	QAngle g_view_angles_spread;
-	//	Vector g_view_forward;
-
-	//	math::get().vector_angles_3(direction, g_view_angles_spread, &up);
-	//	g_view_angles_spread.Normalize();
-	//	math::get().angle_vectors(angles - (g_view_angles_spread - angles), &g_view_forward);
-
-	//	g_view_forward.Normalized();
-	//	g_view_forward = eye_position + (g_view_forward* endpoint.Dist(eye_position));
-
-	//	trace_t tr;
-	//	Ray_t ray;
-	//	ray.Init(eye_position, g_view_forward);
-	//	g_pTrace->ClipRayToEntity(ray, MASK_SHOT_HULL | CONTENTS_HITBOX, player, &tr);
-
-	//	if (tr.m_pEnt == player)
-	//		++TraceHits;
-
-	//	// adding manual accuracy boost calculation here
-	//	if (TraceHits >= cNeededHits)
-	//		return true;
-
-	//	if ((128 /*TESTING 256*/ - i + TraceHits) < cNeededHits)
-	//		return false;
-	//}
-	//return false;
 }

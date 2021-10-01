@@ -27,6 +27,7 @@ void player_log::log( const ClientFrameStage_t stage )
 			curlog.m_bRunningTimer = false;
 			curlog.m_bShot = false;
 			curlog.m_iMode = RMODE_WALL;
+			curlog.m_nSpreadShots = 0;
 			curlog.m_nShots = 0;
 			curlog.m_nShotsLby = 0;
 			continue;
@@ -49,6 +50,7 @@ void player_log::log( const ClientFrameStage_t stage )
 			curlog.m_bShot = false;
 			curlog.m_iMode = RMODE_MOVING;
 			curlog.m_nShots = 0;
+			curlog.m_nSpreadShots = 0;
 			curlog.m_nShotsLby = 0;
 			continue;
 		}

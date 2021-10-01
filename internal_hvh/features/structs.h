@@ -201,6 +201,7 @@ struct player_log_t
 	bool is_balance_adjust_triggered;
 
 	int m_nShots;
+	int m_nSpreadShots;
 	int oldshots;
 	int m_nShotsLby;
 

@@ -277,6 +277,7 @@ public:
 	void set_pose_param( int param, float value );
 	int get_sequence_act( int sequence );
 	Vector get_shoot_pos();
+	CUserCmd*& m_pCurrentCommand();
 };
 
 class C_PlantedC4 : public C_BaseEntity

@@ -217,7 +217,6 @@ void util::print_dev_console( bool printincon, const Color& color, const char * 
 	while (temp.size() <= length)
 	{
 		temp.resize(length + 1);
-
 		va_start(args, format);
 		const auto status = std::vsnprintf(temp.data(), temp.size(), format, args);
 		va_end(args);
@@ -226,7 +225,7 @@ void util::print_dev_console( bool printincon, const Color& color, const char * 
 	}
 	std::string out{ temp.data(), length };
 
-	//print_dev_console(Color(255, 255, 255, 255), out.c_str());
+	print_dev_console(Color(255, 255, 255, 255), out.c_str());
 
 	if (printincon)
 		g_pCVar->ConsoleColorPrintf(color, out.c_str());

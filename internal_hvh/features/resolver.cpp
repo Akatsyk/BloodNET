@@ -1028,6 +1028,7 @@ void resolver::calc_missed_shots(shot_t* shot)
 	}
 	else
 	{
+		log->m_nSpreadShots++;
 		g_pCVar->ConsoleColorPrintf(Color(51, 171, 249, 255), bloodnet);
 		util::print_dev_console(true, Color(51, 171, 249, 255), miss);
 		util::print_dev_console(true, Color(255, 255, 255, 255), sprd);

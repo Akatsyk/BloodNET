@@ -36,8 +36,8 @@ void prediction::start()
 
 void prediction::finish() const
 {
-	g_pGameMovement->FinishTrackPredictionErrors( g_pLocalPlayer );
-	g_pMoveHelper->SetHost( nullptr );
+	g_pGameMovement->FinishTrackPredictionErrors(g_pLocalPlayer);
+	g_pMoveHelper->SetHost(nullptr);
 
 	*m_prediction_random_seed = -1;
 

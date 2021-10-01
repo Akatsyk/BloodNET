@@ -35,6 +35,7 @@ public:
 		value knife_bot;
 		value zeus_bot;
 		value override;
+		value override_damage;
 		value hsonly;
 		value zeus_hc;
 		value aimbot_record;
@@ -45,6 +46,7 @@ public:
 	{
 		value hitchance;
 		value mindmg;
+		//value ov_mindamage;
 		value scale;
 		value scale_head;
 		value adaptive_scale;
@@ -152,6 +154,7 @@ public:
 	struct
 	{
 		value autostop;
+		value override_damage;
 		value autopeek;
 		value baim;
 		value fakewalk;
@@ -492,6 +495,7 @@ struct weaponconfig_t
 		}
 		hitchance = &config->hitchance;
 		mindmg = &config->mindmg;
+		//ov_mindamage = &config->ov_mindamage;
 		scale = &config->scale;
 		scale_head = &config->scale_head;
 		adaptive_scale = &config->adaptive_scale;
@@ -534,6 +538,7 @@ struct weaponconfig_t
 	}
 	value* hitchance;
 	value* mindmg;
+	//value* ov_mindamage;
 	value* scale;
 	value* scale_head;
 	value* adaptive_scale;

@@ -289,8 +289,8 @@ std::vector<std::string> m_chams_type =
 std::vector<std::string> m_autostop_type =
 {
 	_w( "Off" ),
+	_w( "Fast" ),
 	_w( "Normal" ),
-	_w( "Full" ),
 };
 
 std::vector<std::string> m_spread_type =
@@ -422,6 +422,8 @@ void c_menu::init()
 			subtab_one->add_checkbox( _w( "Resolve teammates" ), _w( "aim_rslv_tm" ) );
 			subtab_one->add_checkbox( _w( "Override resolver" ), _w( "aim_ovr" ) );
 			subtab_one->add_keybind( _w( "" ), _w( "k_ovr" ), true );
+			//subtab_one->add_checkbox( _w( "Override damage" ), _w( "aim_override_dmg" ) );
+			//subtab_one->add_keybind( _w( "" ), _w( "k_override_dmg" ), true );
 			subtab_one->add_colorpicker(_w("Shot record"), _w("aim_bot_record"), D3DCOLOR_RGBA(10, 255, 10, 255));
 
 		} tab_first->pushback_subtab( subtab_one );
@@ -454,7 +456,7 @@ void c_menu::init()
 			subtab_four->add_checkbox( _w( "At fov target" ), _w( "aa_r_at_target" ) );
 			subtab_four->add_slider( _w( "Fake lag amount" ), _w( "aa_r_choke" ), 0, 14, _w( "%d ticks" ) );
 			subtab_four->add_checkbox( _w( "Distortion" ), _w( "aa_r_spin" ) );
-			subtab_four->add_slider( _w( "Distortion range" ), _w( "aa_r_spin_range" ), 0.f, 360.f, _w( "%.1f °" ) );
+			subtab_four->add_slider( _w( "Distortion range" ), _w( "aa_r_spin_range" ), 0.f, 180.f, _w( "%.1f °" ) );
 			subtab_four->add_slider( _w( "Distortion speed" ), _w( "aa_r_spin_speed" ), 0.f, 100.f, _w( "%.1f °" ) );
 			subtab_four->add_checkbox( _w( "Freestand" ), _w( "aa_r_freestand" ) );
 			subtab_four->add_checkbox( _w( "Jitter" ), _w( "aa_r_jitter" ) );
@@ -478,7 +480,7 @@ void c_menu::init()
 			subtab_five->add_checkbox( _w( "At fov target" ), _w( "aa_m_at_target" ) );
 			subtab_five->add_slider( _w( "Fake lag amount" ), _w( "aa_m_choke" ), 0, 14, _w( "%d ticks" ) );
 			subtab_five->add_checkbox( _w( "Distortion" ), _w( "aa_m_spin" ) );
-			subtab_five->add_slider(_w("Distortion range"), _w("aa_m_spin_range"), 0.f, 360.f, _w("%.1f °"));
+			subtab_five->add_slider(_w("Distortion range"), _w("aa_m_spin_range"), 0.f, 180.f, _w("%.1f °"));
 			subtab_five->add_slider( _w( "Distortion speed" ), _w( "aa_m_spin_speed" ), 0.f, 100.f, _w( "%.1f °" ) );
 			subtab_five->add_checkbox( _w( "Freestand" ), _w( "aa_m_freestand" ) );
 			subtab_five->add_checkbox( _w( "Jitter" ), _w( "aa_m_jitter" ) );
@@ -494,7 +496,7 @@ void c_menu::init()
 			subtab_six->add_checkbox( _w( "At fov target" ), _w( "aa_a_at_target" ) );
 			subtab_six->add_slider( _w( "Fake lag amount" ), _w( "aa_a_choke" ), 0, 14, _w( "%d ticks" ) );
 			subtab_six->add_checkbox( _w( "Distortion" ), _w( "aa_a_spin" ) );
-			subtab_six->add_slider(_w("Distortion range"), _w("aa_a_spin_range"), 0.f, 360.f, _w("%.1f °"));
+			subtab_six->add_slider(_w("Distortion range"), _w("aa_a_spin_range"), 0.f, 180.f, _w("%.1f °"));
 			subtab_six->add_slider( _w( "Distortion speed" ), _w( "aa_a_spin_speed" ), 0.f, 100.f, _w( "%.1f °" ) );
 			subtab_six->add_checkbox( _w( "Freestand" ), _w( "aa_a_freestand" ) );
 			subtab_six->add_checkbox( _w( "Jitter" ), _w( "aa_a_jitter" ) );
@@ -517,6 +519,7 @@ void c_menu::init()
 		{
 			subtab_two->add_slider( _w( "Minimum hitchance" ), _w( "cfg_au_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_two->add_slider( _w( "Minimum damage" ), _w( "cfg_au_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_two->add_slider(_w("Override damage"), _w("cfg_au_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_two->add_slider( _w( "Hitbox scale head" ), _w( "cfg_au_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_two->add_slider( _w( "Hitbox scale body" ), _w( "cfg_au_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_two->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_au_ad_scale" ) );
@@ -536,6 +539,7 @@ void c_menu::init()
 		{
 			subtab_three->add_slider( _w( "Minimum hitchance" ), _w( "cfg_sc_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_three->add_slider( _w( "Minimum damage" ), _w( "cfg_sc_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_three->add_slider(_w("Override damage"), _w("cfg_sc_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_three->add_slider( _w( "Hitbox scale head" ), _w( "cfg_sc_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_three->add_slider( _w( "Hitbox scale body" ), _w( "cfg_sc_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_three->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_sc_ad_scale" ) );
@@ -556,6 +560,7 @@ void c_menu::init()
 		{
 			subtab_four->add_slider( _w( "Minimum hitchance" ), _w( "cfg_awp_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_four->add_slider( _w( "Minimum damage" ), _w( "cfg_awp_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_four->add_slider(_w("Override damage"), _w("cfg_awp_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_four->add_slider( _w( "Hitbox scale head" ), _w( "cfg_awp_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_four->add_slider( _w( "Hitbox scale body" ), _w( "cfg_awp_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_four->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_awp_ad_scale" ) );
@@ -575,6 +580,7 @@ void c_menu::init()
 		{
 			subtab_five->add_slider( _w( "Minimum hitchance" ), _w( "cfg_hp_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_five->add_slider( _w( "Minimum damage" ), _w( "cfg_hp_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_five->add_slider(_w("Override damage"), _w("cfg_hp_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_five->add_slider( _w( "Hitbox scale head" ), _w( "cfg_hp_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_five->add_slider( _w( "Hitbox scale body" ), _w( "cfg_hp_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_five->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_hp_ad_scale" ) );
@@ -594,6 +600,7 @@ void c_menu::init()
 		{
 			subtab_six->add_slider( _w( "Minimum hitchance" ), _w( "cfg_p_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_six->add_slider( _w( "Minimum damage" ), _w( "cfg_p_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_six->add_slider(_w("Override damage"), _w("cfg_p_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_six->add_slider( _w( "Hitbox scale head" ), _w( "cfg_p_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_six->add_slider( _w( "Hitbox scale body" ), _w( "cfg_p_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_six->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_p_ad_scale" ) );
@@ -612,6 +619,7 @@ void c_menu::init()
 		{
 			subtab_seven->add_slider( _w( "Minimum hitchance" ), _w( "cfg_o_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_seven->add_slider( _w( "Minimum damage" ), _w( "cfg_o_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_seven->add_slider(_w("Override damage"), _w("cfg_o_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_seven->add_slider( _w( "Hitbox scale head" ), _w( "cfg_o_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_seven->add_slider( _w( "Hitbox scale body" ), _w( "cfg_o_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_seven->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_o_ad_scale" ) );

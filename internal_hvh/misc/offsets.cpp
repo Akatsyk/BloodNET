@@ -3,6 +3,7 @@
 uintptr_t offsets::local_player = 0;
 uintptr_t offsets::move_helper = 0;
 uintptr_t offsets::pred_random_seed = 0;
+uintptr_t offsets::pred_player = 0;
 uintptr_t offsets::set_abs_angles = 0;
 uintptr_t offsets::view_render = 0;
 uintptr_t offsets::view_render_bms = 0;
@@ -19,6 +20,7 @@ uintptr_t offsets::glow_obj_manager = 0;
 uintptr_t offsets::smoke_count = 0;
 uintptr_t offsets::get_weapon_name = 0;
 uintptr_t offsets::get_sequence_act = 0;
+uintptr_t offsets::current_command = 0;
 uintptr_t offsets::enable_invalidate_bone_cache = 0;
 uintptr_t offsets::invalidate_physics_recursive = 0;
 uintptr_t offsets::is_breakable_entity = 0;
