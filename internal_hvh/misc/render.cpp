@@ -11,15 +11,22 @@ bool file_exists( const char *fileName )
 
 namespace fonts
 {
-	std::shared_ptr<c_font> esp = std::make_shared<c_font>( "Verdana", 8, 400 );
+	std::shared_ptr<c_font> menu_new_font = std::make_shared<c_font>( "Josefin Sans Regular", 18, 400, 128U, REGULAR_FONTTYPE );
+	std::shared_ptr<c_font> tab_new_font = std::make_shared<c_font>( "Josefin Sans Regular", 10, 800, 128u, REGULAR_FONTTYPE);
+	std::shared_ptr<c_font> subtub_new_font = std::make_shared<c_font>( "Josefin Sans Regular", 15, 400, 128u, REGULAR_FONTTYPE);
+	std::shared_ptr<c_font> esp = std::make_shared<c_font>( "Smallest Pixel-7", 8, 400 );
+	//std::shared_ptr<c_font> esp = std::make_shared<c_font>( "Verdana", 8, 400 );
 	std::shared_ptr<c_font> esp_small = std::make_shared<c_font>( "Smallest Pixel-7", 9, 0 );
 	std::shared_ptr<c_font> lby = std::make_shared<c_font>( "Verdana", 18, 400 ); // 11 400
-	std::shared_ptr<c_font> watermarker = std::make_shared<c_font>("Verdana", 10, 400); // "Verdana", 27, 800 
+	std::shared_ptr<c_font> weapon_font = std::make_shared<c_font>( "undefeated", 13, 800 ); // 11 400
+	std::shared_ptr<c_font> watermarker = std::make_shared<c_font>("Josefin Sans Regular", 10, 400, 128u, REGULAR_FONTTYPE);
+	//std::shared_ptr<c_font> watermarker = std::make_shared<c_font>("Verdana", 10, 400); // "Verdana", 27, 800 
 
 	std::shared_ptr<c_font> controlfont = std::make_shared<c_font>( "Verdana", 10, 700 );
 	std::shared_ptr<c_font> tabfont = std::make_shared<c_font>( "Tahoma", 10, 400 );
 	std::shared_ptr<c_font> tabfontthicc = std::make_shared<c_font>( "Tahoma", 10, 800 );
-	std::shared_ptr<c_font> subtabfont = std::make_shared<c_font>( "Verdana", 10, 800 );
+	std::shared_ptr<c_font> subtabfont = std::make_shared<c_font>("Josefin Sans Regular", 10, 400, 128u, REGULAR_FONTTYPE);
+	//std::shared_ptr<c_font> subtabfont = std::make_shared<c_font>( "Verdana", 10, 800 );
 	std::shared_ptr<c_font> smallfont = std::make_shared<c_font>( "Tahoma", 6, 400 );
 	std::shared_ptr<c_font> keybindfont = std::make_shared<c_font>( "Verdana", 6, 400 );
 }
@@ -54,8 +61,12 @@ void render::init( IDirect3DDevice9* dev )
 
 	AddFont( smallest );
 
+	fonts.push_back( fonts::menu_new_font );
+	fonts.push_back( fonts::tab_new_font );
+	fonts.push_back( fonts::subtub_new_font );
 	fonts.push_back( fonts::esp );
 	fonts.push_back( fonts::esp_small );
+	fonts.push_back( fonts::weapon_font);
 	fonts.push_back( fonts::lby );
 	fonts.push_back( fonts::watermarker );
 
@@ -356,6 +367,22 @@ void render::circle_filled_3d(Vector center, int radius, Color color)
 		Vector start2d;
 		if (math::get().world_to_screen(start, start2d))
 			render::get().line(Vector2D(start2d.x, start2d.y), Vector2D(start2d.x + 1, start2d.y + 1), Color(255, 255, 255, 255));
+	}
+}
+
+void render::DLightCircle3D(Vector vecPosition, int32_t iPointCount, float_t flRadius, Color aColor)
+{
+	float_t flStep = (float_t)(3.14159265358979323846f) * 2.0f / (float_t)(iPointCount);
+	for (float a = 0; a < (3.14159265358979323846f * 2.0f); a += flStep)
+	{
+		Vector vecStart = Vector(flRadius * cosf(a) + vecPosition.x, flRadius * sinf(a) + vecPosition.y, vecPosition.z);
+		Vector vecEnd = Vector(flRadius * cosf(a + flStep) + vecPosition.x, flRadius * sinf(a + flStep) + vecPosition.y, vecPosition.z);
+
+		Vector vecStart2D, vecEnd2D;
+		if (g_pDebugOverlay->ScreenPosition(vecStart, vecStart2D) || g_pDebugOverlay->ScreenPosition(vecEnd, vecEnd2D))
+			return;
+
+		this->line(Vector2D(vecStart2D.x, vecStart2D.y), Vector2D(vecEnd2D.x, vecEnd2D.y), aColor);
 	}
 }
 

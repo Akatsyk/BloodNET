@@ -6,9 +6,9 @@ c_window::c_window(std::string name, bounds pbounds, bool tabs)
 	this->m_name = name;
 	this->m_bounds = pbounds;
 	this->m_hastabs = tabs;
-	this->m_tabarea = bounds(pbounds.x + 1, pbounds.y + 21, 120, pbounds.h - 22);
-	this->m_subtabarea = bounds(pbounds.x + 121, pbounds.y + 21, 201, pbounds.h - 22);
-	this->m_area = bounds(pbounds.x + 322, pbounds.y + 21, pbounds.w - 324, pbounds.h - 22);
+	this->m_tabarea = bounds(pbounds.x + 201, pbounds.y + 44, 40, 30);
+	this->m_subtabarea = bounds(pbounds.x + 1, pbounds.y + 78, /*201*/220, pbounds.h - 85);
+	this->m_area = bounds(pbounds.x + 230, pbounds.y + 78, pbounds.w - 237, pbounds.h - 85);
 }
 
 void c_window::render()
@@ -18,83 +18,61 @@ void c_window::render()
 
 	int center = m_bounds.x + m_bounds.w / 2;
 
-	render::get().filled_box(m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, D3DCOLOR_RGBA(33, 27, 70, 250));
+	/*
+	* AkatsukiSun: Fatality menu colours:
+	*	1. Background tabs: 27,21,55
+	*	2. Gradient line:
+	*		1) 34,22,96
+	*		2) 98,15,70
+	*	3. Under tabs area: 12,9,26
+	*	4. Subtub area: 31,25,66
+	*	5. Non workable area: 27,19,54
+	*	6. Workable area: 33,26,67
+	*/
 
-	render::get().bordered_box(m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, D3DCOLOR_RGBA(60, 53, 93, 250), 1);
+	render::get().filled_box(m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, D3DCOLOR_RGBA(15, 10, 25, 250));
 
-	render::get().filled_box(m_tabarea.x, m_tabarea.y, m_tabarea.w, m_tabarea.h, D3DCOLOR_RGBA(33, 27, 70, 250));
+	render::get().bordered_box(m_bounds.x, m_bounds.y, m_bounds.w, m_bounds.h, D3DCOLOR_RGBA(60, 55, 95, 250), 1);
 
-	render::get().line(Vector2D(m_bounds.x + 1, m_bounds.y + 20), Vector2D(m_bounds.x + m_bounds.w - 1, m_bounds.y + 20), D3DCOLOR_RGBA(60, 53, 93, 250));
+	render::get().rect_filled_linear_gradient(Vector2D(m_bounds.x + 1, m_bounds.y + 20), Vector2D(m_bounds.w - 2, 2), D3DCOLOR_RGBA(35, 20, 100, 250), D3DCOLOR_RGBA(100, 15, 70, 250), true);
 
-	render::get().filled_box(m_subtabarea.x, m_subtabarea.y, m_subtabarea.w, m_subtabarea.h, D3DCOLOR_RGBA(60, 53, 93, 250));
+	render::get().filled_box(m_area.x, m_area.y, m_area.w, m_area.h, D3DCOLOR_RGBA(35, 25, 70, 250));
 
-	if (img == NULL)
-		D3DXCreateTextureFromFileInMemory(render::get().get_device(), &DATA_SMALL, sizeof(DATA_SMALL), &img);
-	if (sprite == NULL)
-		D3DXCreateSprite(render::get().get_device(), &sprite);
+	render::get().filled_box(m_subtabarea.x, m_bounds.y + 1, m_bounds.w - 2, 18, D3DCOLOR_RGBA(30, 20, 55, 250));
 
-	if (img && sprite)
+	render::get().filled_box(m_subtabarea.x, m_bounds.y + 22, m_bounds.w - 2, 50, D3DCOLOR_RGBA(30, 20, 55, 250));
+
+	render::get().filled_box(m_subtabarea.x + 5, m_subtabarea.y, m_subtabarea.w - 5, m_subtabarea.h, D3DCOLOR_RGBA(30, 25, 65, 250));
+
+	static float Blue = 0.4f;
+	static float Red = 0.1f;
+	static bool DragR = false;
+	static bool DragB = false;
+	Blue -= 0.01f;
+	if (Blue < 0.f)
 	{
-		D3DXMATRIX world;
-		D3DXMATRIX rotation;
-		D3DXMATRIX scale;
-		D3DXMATRIX translation;
-		D3DXMatrixIdentity(&world);
-
-		D3DXMatrixScaling(&scale, 1.f, .6f, 1.f);
-		D3DXMatrixRotationYawPitchRoll(&rotation, 0.f, 0.f, 0.f);
-		D3DXMatrixTranslation(&translation, 0.f, 0.f, 0.f);
-		world = rotation * scale * translation;
-
-
-		D3DSURFACE_DESC img_info;
-		img->GetLevelDesc(0, &img_info);
-
-		sprite->SetTransform(&world);
-		sprite->Begin(D3DXSPRITE_ALPHABLEND);
-		//sprite->Draw(img, NULL, NULL, &D3DXVECTOR3(m_tabarea.x + (m_tabarea.w / 2) - static_cast<int>(img_info.Width / 2) + 1, m_tabarea.y * 2.f + 25.f, 0.f), D3DCOLOR_RGBA(255, 255, 255, 255));
-		sprite->Draw(img, NULL, NULL, &D3DXVECTOR3(m_tabarea.x + (m_tabarea.w / 2) - static_cast<int>(img_info.Width / 2) + 1, m_tabarea.y * 1.6666666f + 25.f, 0.f), D3DCOLOR_RGBA(255, 255, 255, 255));
-		sprite->End();
+		Blue += 1.f;
+		DragB = DragR;
+	}
+	Red -= 0.01f;
+	if (Red < 0.f)
+	{
+		Red += 1.f;
+		DragR = !DragB;
 	}
 
-
-
-	if (sprite_big == NULL)
-		D3DXCreateSprite(render::get().get_device(), &sprite_big);
-
-	if (img_big && sprite_big)
 	{
-		D3DXMATRIX world;
-		D3DXMATRIX rotation;
-		D3DXMATRIX scale;
-		D3DXMATRIX translation;
-		D3DXMatrixIdentity(&world);
+		render::get().text(DragB ? Vector2D(m_bounds.x + 21, m_tabarea.y - 23) : Vector2D(m_bounds.x + 19, m_tabarea.y - 21),
+			"BLOODNET", Color(10, 10, 255, Blue * 200.f), fonts::menu_new_font, c_font::left_aligned);
 
-		D3DXMatrixScaling(&scale, .55f, .6f, 1.f);
-		D3DXMatrixRotationYawPitchRoll(&rotation, 0.f, 0.f, 0.f);
-		D3DXMatrixTranslation(&translation, 0.f, 0.f, 0.f);
-		world = rotation * scale * translation;
-
-		D3DSURFACE_DESC img_info;
-		img_big->GetLevelDesc(0, &img_info);
-
-		D3DVIEWPORT9 backup;
-		render::get().get_device()->GetViewport(&backup);
-		D3DVIEWPORT9 new_vp;
-		new_vp.X = m_area.x;
-		new_vp.Y = m_area.y;
-		new_vp.Width = m_area.w;
-		new_vp.Height = m_area.h;
-
-		render::get().get_device()->SetViewport(&new_vp);
-
-		sprite_big->SetTransform(&world);
-		sprite_big->Begin(D3DXSPRITE_ALPHABLEND);
-		sprite_big->Draw(img_big, NULL, NULL, &D3DXVECTOR3(m_area.x * 1.8333333f + 16, m_area.y * 1.6666666f + 16, 0.f), D3DCOLOR_RGBA(255, 255, 255, 255));
-		sprite_big->End();
-
-		render::get().get_device()->SetViewport(&backup);
+		render::get().text(DragR ? Vector2D(m_bounds.x + 19, m_tabarea.y - 21) : Vector2D(m_bounds.x + 23, m_tabarea.y - 23),
+			"BLOODNET", Color(255, 10, 10, Red * 200.f), fonts::menu_new_font, c_font::left_aligned);
 	}
+
+	DragB = !DragB;
+
+	render::get().text(Vector2D(m_bounds.x + 20, m_tabarea.y - 22),
+		"BLOODNET", Color(255, 255, 255, 255), fonts::menu_new_font, c_font::left_aligned);
 
 	for (auto tab : m_tabs)
 	{
@@ -147,9 +125,9 @@ void c_window::handle_movement()
 	m_bounds.x = resultx;
 	m_bounds.y = resulty;
 
-	m_tabarea = bounds(m_bounds.x + 1, m_bounds.y + 21, 120, m_bounds.h - 22);
-	m_subtabarea = bounds(m_bounds.x + 121, m_bounds.y + 21, 201, m_bounds.h - 22);
-	m_area = bounds(m_bounds.x + 322, m_bounds.y + 21, m_bounds.w - 324, m_bounds.h - 22);
+	m_tabarea = bounds(m_bounds.x + 201, m_bounds.y + 44, 40, 30);
+	m_subtabarea = bounds(m_bounds.x + 1, m_bounds.y + 78, /*201*/220, m_bounds.h - 85);
+	m_area = bounds(m_bounds.x + 230, m_bounds.y + 78, m_bounds.w - 237, m_bounds.h - 85);
 
 	m_drag_offset.x = render::get().get_dimensions().Width - c_menu::get().get_mouse_pos().x;
 	m_drag_offset.y = render::get().get_dimensions().Height - c_menu::get().get_mouse_pos().y;

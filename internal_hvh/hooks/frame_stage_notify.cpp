@@ -36,6 +36,8 @@ void __stdcall hooks::frame_stage_notify( ClientFrameStage_t stage )
 
 	animations::get().fix_local_anims( stage );
 
+	net_data::get().apply( stage );
+
 	//resolver::get().extrpolate_players(stage);
 
 	orig_frame_stage_notify( stage );

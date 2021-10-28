@@ -93,31 +93,31 @@ void console_log::hurt_event( IGameEvent * game_event )
 
 void console_log::setup()
 {
-	if ( m_setup )
+	if (m_setup)
 		return;
 
-	//_( developer_s, "developer" );
-	//_( con_filter_text_s, "con_filter_text" );
-	//_( con_filter_text_out_s, "con_filter_text_out" );
-	//_( con_filter_enable_s, "con_filter_enable" );
-	//_( contimes_s, "contimes" );
+	_(developer_s, "developer");
+	_(con_filter_text_s, "con_filter_text");
+	_(con_filter_text_out_s, "con_filter_text_out");
+	_(con_filter_enable_s, "con_filter_enable");
+	_(contimes_s, "contimes");
 
-	//static auto developer = g_pCVar->FindVar( developer_s );
-	//developer->set_value( 1 );
-	//static auto con_filter_text = g_pCVar->FindVar( con_filter_text_s );
-	//static auto con_filter_text_out = g_pCVar->FindVar( con_filter_text_out_s );
-	//static auto con_filter_enable = g_pCVar->FindVar( con_filter_enable_s );
-	//static auto contimes = g_pCVar->FindVar( contimes_s );
+	static auto developer = g_pCVar->FindVar(developer_s);
+	developer->set_value(1);
+	static auto con_filter_text = g_pCVar->FindVar(con_filter_text_s);
+	static auto con_filter_text_out = g_pCVar->FindVar(con_filter_text_out_s);
+	static auto con_filter_enable = g_pCVar->FindVar(con_filter_enable_s);
+	static auto contimes = g_pCVar->FindVar(contimes_s);
 
-	//_( L, "L " );
-	//_( s, " " );
-	//_( clear, "clear" );
+	_(L, "L ");
+	_(s, " ");
+	_(clear, "clear");
 
-	//contimes->set_value( 15 );
-	//con_filter_text->set_value( L );
-	//con_filter_text_out->set_value( s );
-	//con_filter_enable->set_value( 2 );
-	//g_pEngine->ClientCmd_Unrestricted( clear );
+	contimes->set_value(15);
+	con_filter_text->set_value(L);
+	con_filter_text_out->set_value(s);
+	con_filter_enable->set_value(2);
+	g_pEngine->ClientCmd_Unrestricted(clear);
 
 	m_setup = true;
 }
@@ -126,11 +126,11 @@ void console_log::listener( IGameEvent * game_event )
 {
 	setup();
 
-	_( player_hurt, "player_hurt" );
-	_( item_purchase, "item_purchase" );
+	_(player_hurt, "player_hurt");
+	_(item_purchase, "item_purchase");
 
-	if ( vars.misc.hurtlog.get<bool>() && !strcmp( game_event->GetName(), player_hurt ) )
-		hurt_event( game_event );
-	else if ( vars.misc.buylog.get<bool>() && !strcmp( game_event->GetName(), item_purchase ) )
-		buy_event( game_event );
+	if (vars.misc.hurtlog.get<bool>() && !strcmp(game_event->GetName(), player_hurt))
+		hurt_event(game_event);
+	else if (vars.misc.buylog.get<bool>() && !strcmp(game_event->GetName(), item_purchase))
+		buy_event(game_event);
 }

@@ -11,6 +11,7 @@ public:
 	float operator[]( int i ) const;
 	float& operator[]( int i );
 	inline void Zero();
+	//inline void ToQAngle(QAngle& angle);
 	inline void Rotate2D( const float &f );
 	bool operator==( const Vector& v ) const;
 	bool operator!=( const Vector& v ) const;
@@ -79,6 +80,13 @@ inline void Vector::Zero()
 {
 	x = y = z = 0.0f;
 }
+////===============================================
+//inline void Vector::ToQAngle(QAngle& angle)
+//{
+//	angle.x = x;
+//	angle.y = y;
+//	angle.z = z;
+//}
 //===============================================
 inline void Vector::Rotate2D( const float &f )
 {

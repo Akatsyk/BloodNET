@@ -25,33 +25,24 @@ void __fastcall hooks::standard_blending_rules(void* ecx, void* edx, CStudioHdr*
 
 void __fastcall hooks::fire_event(void* ecx, void* edx)
 {
-	if (!g_pLocalPlayer || !g_pLocalPlayer->get_alive())
+	if (!g_pLocalPlayer || !g_pLocalPlayer->get_alive() || !g_pEngine->IsInGame())
 		return orig_fire_event(ecx);
 
-	auto ei = g_pClientState->m_Events; //0x4DEC
+	auto cur_event = *reinterpret_cast<CEventInfo**>(reinterpret_cast<uintptr_t>(g_pClientState) + 0x4DEC);
+	if (!cur_event)
+		return orig_fire_event(ecx);
+
 	CEventInfo* next = nullptr;
-
-	if (!ei)
-		return orig_fire_event(ecx);
 
 	do
 	{
-		next = *reinterpret_cast<CEventInfo**>(reinterpret_cast<uintptr_t>(ei) + 0x38);
+		next = *(CEventInfo**)((uintptr_t)cur_event + 0x38);
+		if (cur_event->classID - 1 == 197)
+			cur_event->fire_delay = 0.0f;
 
-		const uint16_t class_id = ei->classID - 1;
+		cur_event = next;
 
-		const auto m_p_create_event_fn = ei->pClientClass->m_pCreateEventFn;
-		if (!m_p_create_event_fn)
-			continue;
-
-		const auto p_ce = m_p_create_event_fn();
-		if (!p_ce)
-			continue;
-
-		ei->fire_delay = 0.f;
-
-		ei = next;
-	} while (next != nullptr);
+	} while (next);
 
 	return orig_fire_event(ecx);
 }

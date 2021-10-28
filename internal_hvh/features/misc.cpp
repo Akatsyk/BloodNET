@@ -100,83 +100,164 @@ void misc::reveal_ranks()
 	reveal_ranks(array);
 }
 
-void misc::automaticpeek()
+void misc::Instance()
 {
-	static bool returning, placed;
-
-	if (!g_pLocalPlayer || !g_pLocalPlayer->get_alive())
+	if (misc::get().m_bRetreated)
+		misc::get().m_vecStartPosition.Zero();
+	else if (vars.misc.autopeek.get<bool>() && GetAsyncKeyState(vars.key.autopeek.get<int>()))
 	{
-		if (!misc::get().g_autopeek_pos.IsZero())
-			misc::get().g_autopeek_pos.Zero();
+		if (!misc::get().m_bTurnedOn)
+		{
+			misc::get().m_bTurnedOn = true;
+			misc::get().m_bWaitAnimationProgress = true;
+			misc::get().m_bNegativeSide = false;
 
-		returning = false;
+			misc::get().m_flAnimationTime = g_pGlobals->realtime + .1f;
 
+			misc::get().m_vecStartPosition = g_pLocalPlayer->get_abs_origin();
+		}
+	}
+	else if (misc::get().m_bTurnedOn)
+	{
+		misc::get().m_bTurnedOn = false;
+		misc::get().m_bWaitAnimationProgress = true;
+		misc::get().m_bNegativeSide = true;
+
+		misc::get().m_flAnimationTime = g_pGlobals->realtime + .1f;
+	}
+
+	if (!misc::get().m_bRetreat)
+	{
+		if (g_cmd->buttons & IN_ATTACK)
+			misc::get().m_bRetreat = true;
+	}
+
+	if (!misc::get().m_bRetreat || !misc::get().m_bTurnedOn)
+		return;
+
+	auto vecDifference = g_pLocalPlayer->get_abs_origin() - misc::get().m_vecStartPosition;
+	if (vecDifference.Length2D() <= 5.0f)
+	{
+		misc::get().m_bRetreat = false;
 		return;
 	}
 
-	if (!vars.misc.autopeek.get<bool>() || !GetAsyncKeyState(vars.key.autopeek.get<int>()))
-	{
-		returning = false;
+	QAngle angWishAngles;
+	g_pEngine->GetViewAngles(angWishAngles);
 
-		if (!misc::get().g_autopeek_pos.IsZero())
-			misc::get().g_autopeek_pos.Zero();
+	float_t flVelocityX = vecDifference.x * cos(angWishAngles.y / 180.0f * M_PI) + vecDifference.y * sin(angWishAngles.y / 180.0f * M_PI);
+	float_t flVelocityY = vecDifference.y * cos(angWishAngles.y / 180.0f * M_PI) - vecDifference.x * sin(angWishAngles.y / 180.0f * M_PI);
 
-		return;
-	}
-
-	float die_time = prediction::get().get_curtime();
-	auto weapon = get_weapon(g_pLocalPlayer->get_active_weapon());
-	if (!weapon) return;
-	bool revolver_shoot = weapon->get_item_definiton_index() == WEAPON_REVOLVER && !g_revolver_fire && (g_cmd->buttons & IN_ATTACK || g_cmd->buttons & IN_ATTACK2);
-
-	// make sure you shot correctly here
-	if ((g_cmd->buttons & IN_ATTACK && weapon->get_item_definiton_index() != WEAPON_REVOLVER || revolver_shoot) && !returning)
-		returning = true;
-
-	// draw your beautiful 3d filled circle now
-	if (misc::get().g_autopeek_pos.IsZero())
-	{
-		misc::get().g_autopeek_pos = g_pLocalPlayer->get_abs_origin();
-		++die_time;
-	}
-
-	auto dLight = g_pEffects->CL_AllocDlight(g_pLocalPlayer->EntIndex());
-	dLight->radius = vars.misc.autopeek_radius.get<float>();
-	dLight->die += die_time;
-	dLight->color = returning ? Color(10, 255, 10, 5) : Color(255, 10, 10, 5);
-
-	dLight->key = g_pLocalPlayer->EntIndex();
-	dLight->decay = dLight->radius / 5.0f;
-	dLight->origin = misc::get().g_autopeek_pos + Vector(0, 0, 2);
-
-	if (returning)
-	{
-		if (misc::get().g_autopeek_pos.IsZero())
-		{
-			returning = false;
-			--die_time;
-			return;
-		}
-
-		Vector nOrigin = g_pLocalPlayer->get_abs_origin() - misc::get().g_autopeek_pos;
-
-		// *;*
-		if (nOrigin.Length2D() < 5.f)
-		{
-			returning = false;
-			return;
-		}
-
-		auto velocity = 
-			Vector(nOrigin.x * cos(misc::get().g_real_angles.y / 180.0f * M_PI) + nOrigin.y * sin(misc::get().g_real_angles.y / 180.0f * M_PI), 
-			nOrigin.y * cos(misc::get().g_real_angles.y / 180.0f * M_PI) - nOrigin.x *sin(misc::get().g_real_angles.y / 180.0f * M_PI), 
-			nOrigin.z);
-
-		// alright, lets go
-		g_cmd->forwardmove = -velocity.x * 20.f;
-		g_cmd->sidemove = velocity.y * 20.f;
-	}
+	g_cmd->forwardmove = -flVelocityX * 20.0f;
+	g_cmd->sidemove = flVelocityY * 20.0f;
 }
+
+void misc::DrawCircle()
+{
+	float_t flAnimationProgress = 1.0f;
+	if (misc::get().m_bWaitAnimationProgress)
+	{
+		flAnimationProgress = 1.0f - ((misc::get().m_flAnimationTime - g_pGlobals->realtime) / .1f);
+		if (misc::get().m_bNegativeSide)
+			flAnimationProgress = 1.0f - flAnimationProgress;
+
+		if (flAnimationProgress == 0.0f || flAnimationProgress == 1.0f)
+			misc::get().m_bWaitAnimationProgress = false;
+	}
+
+	flAnimationProgress = std::clamp(flAnimationProgress, 0.0f, 1.0f);
+	if (!misc::get().m_bTurnedOn)
+	{
+		if (misc::get().m_bWaitAnimationProgress)
+			render::get().DLightCircle3D(misc::get().m_vecStartPosition, 32, 18.5f * flAnimationProgress, Color(255, 255, 255, 255));
+		else
+			misc::get().m_vecStartPosition = Vector(0, 0, 0);
+
+		return;
+	}
+
+	return render::get().DLightCircle3D(misc::get().m_vecStartPosition, 32, 18.5f * flAnimationProgress, Color(255, 255, 255, 255));
+}
+
+//void misc::automaticpeek()
+//{
+//	static bool returning, placed;
+//
+//	if (!g_pLocalPlayer || !g_pLocalPlayer->get_alive())
+//	{
+//		if (!misc::get().g_autopeek_pos.IsZero())
+//			misc::get().g_autopeek_pos.Zero();
+//
+//		returning = false;
+//
+//		return;
+//	}
+//
+//	if (!vars.misc.autopeek.get<bool>() || !GetAsyncKeyState(vars.key.autopeek.get<int>()))
+//	{
+//		returning = false;
+//
+//		if (!misc::get().g_autopeek_pos.IsZero())
+//			misc::get().g_autopeek_pos.Zero();
+//
+//		return;
+//	}
+//
+//	float die_time = prediction::get().get_curtime();
+//	auto weapon = get_weapon(g_pLocalPlayer->get_active_weapon());
+//	if (!weapon) return;
+//	bool revolver_shoot = weapon->get_item_definiton_index() == WEAPON_REVOLVER && !g_revolver_fire && (g_cmd->buttons & IN_ATTACK || g_cmd->buttons & IN_ATTACK2);
+//
+//	// make sure you shot correctly here
+//	if ((g_cmd->buttons & IN_ATTACK && weapon->get_item_definiton_index() != WEAPON_REVOLVER || revolver_shoot) && !returning)
+//		returning = true;
+//
+//	// draw your beautiful 3d filled circle now
+//	if (misc::get().g_autopeek_pos.IsZero())
+//	{
+//		misc::get().g_autopeek_pos = g_pLocalPlayer->get_abs_origin();
+//		//++die_time;
+//	}
+//
+//	//render::get().DLightCircle3D(misc::get().g_autopeek_pos, 32, 30.0f, returning ? Color(10, 255, 10, 5) : Color(255, 10, 10, 5));
+//
+//	auto dLight = g_pEffects->CL_AllocDlight(g_pLocalPlayer->EntIndex());
+//	dLight->radius = vars.misc.autopeek_radius.get<float>();
+//	dLight->die += die_time;
+//	dLight->color = returning ? Color(10, 255, 10, 5) : Color(255, 10, 10, 5);
+//
+//	dLight->key = g_pLocalPlayer->EntIndex();
+//	dLight->decay = dLight->radius / 5.0f;
+//	dLight->origin = misc::get().g_autopeek_pos + Vector(0, 0, 2);
+//
+//	if (returning)
+//	{
+//		if (misc::get().g_autopeek_pos.IsZero())
+//		{
+//			returning = false;
+//			//--die_time;
+//			return;
+//		}
+//
+//		Vector nOrigin = g_pLocalPlayer->get_abs_origin() - misc::get().g_autopeek_pos;
+//
+//		// *;*
+//		if (nOrigin.Length2D() < 5.f)
+//		{
+//			returning = false;
+//			return;
+//		}
+//
+//		auto velocity = 
+//			Vector(nOrigin.x * cos(misc::get().g_real_angles.y / 180.0f * M_PI) + nOrigin.y * sin(misc::get().g_real_angles.y / 180.0f * M_PI), 
+//			nOrigin.y * cos(misc::get().g_real_angles.y / 180.0f * M_PI) - nOrigin.x *sin(misc::get().g_real_angles.y / 180.0f * M_PI), 
+//			nOrigin.z);
+//
+//		// alright, lets go
+//		g_cmd->forwardmove = -velocity.x * 20.f;
+//		g_cmd->sidemove = velocity.y * 20.f;
+//	}
+//}
 
 void misc::soundesp(const int idx, const char* sample, const Vector& origin)
 {

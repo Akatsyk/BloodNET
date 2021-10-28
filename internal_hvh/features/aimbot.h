@@ -38,7 +38,8 @@ private:
 	void scan_targets();
 
 	float calc_hc(QAngle vangles, const aimpoint_t& point, C_CSPlayer* player) const;
-	bool calculate_hitchance(QAngle vangles, const aimpoint_t& point, C_CSPlayer* player);
+	//bool calculate_hitchance(QAngle vangles, const aimpoint_t& point, C_CSPlayer* player);
+	bool calculate_hitchance(QAngle vangles, const aimpoint_t& point, matrix3x4_t* matrix, C_CSPlayer* player);
 
 	std::vector<aim_data_t> targets;
 	std::array<bool, 21> enabled_hitboxes;

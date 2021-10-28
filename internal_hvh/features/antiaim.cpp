@@ -241,8 +241,6 @@ void antiaim::lby_prediction()
 	{
 		g_cmd->viewangles.y = initial_lby + get_add_by_choke();
 	}
-
-
 }
 
 // thanks aimware.
@@ -409,11 +407,8 @@ void antiaim::fake_walk()
 
 	if (choked < max_ticks || ticks_to_stop)
 		fake_walk_called = prediction::get().get_unpred_curtime();
-	//*g_send_packet = false;
 
 	if (ticks_to_stop > ticks_left - 1 || !choked)
-		//aimbot::get().quick_stop();
-		//quick_stop();
 		moneybot_stop();
 }
 
@@ -484,23 +479,17 @@ bool antiaim::on_peek_fakelag()
 
 void antiaim::choose_real()
 {
-		
-	const auto air = vars.aa.air.enabled.get<bool>() && !( g_pLocalPlayer->get_flags() & FL_ONGROUND );
+	const auto air = vars.aa.air.enabled.get<bool>() && !(g_pLocalPlayer->get_flags() & FL_ONGROUND);
 	const auto moving = vars.aa.moving.enabled.get<bool>() && g_pLocalPlayer->get_flags() & FL_ONGROUND && prediction::get().get_unpred_vel().Length() > 0.1f;
-	const auto fakewalking = vars.aa.fakewalk.get<bool>() && GetAsyncKeyState( vars.key.fakewalk.get<int>() );
-	const auto regular = ( !air && !moving ) || ( fakewalking && !air );
+	const auto fakewalking = vars.aa.fakewalk.get<bool>() && GetAsyncKeyState(vars.key.fakewalk.get<int>());
+	const auto regular = (!air && !moving) || (fakewalking && !air);
 
-	if ( air ) { type = 2; }
-	if ( moving ) { type = 1; }
-	if ( regular ) { type = 0; }
+	if (air) { type = 2; }
+	if (moving) { type = 1; }
+	if (regular) { type = 0; }
 
 	if (get_antiaim(type)->at_target->get<bool>())
 		do_at_target();
-
-	do_add();
-
-	if (!get_antiaim(type)->edge->get<bool>())
-		do_freestand();
 
 	if (get_antiaim(type)->spin->get<bool>())
 		do_spin();
@@ -508,10 +497,42 @@ void antiaim::choose_real()
 	if (get_antiaim(type)->jitter->get<bool>())
 		do_jitter();
 
-	if (get_antiaim(type)->lby->get<bool>() && !fakewalking) // TESTING
+	do_add();
+
+	if (!get_antiaim(type)->edge->get<bool>() || !do_edge())
+		do_freestand();
+
+	if (get_antiaim(type)->lby->get<bool>())
 		do_lby();
 
 	g_cmd->viewangles.x = 89.f;
+	//const auto air = vars.aa.air.enabled.get<bool>() && !( g_pLocalPlayer->get_flags() & FL_ONGROUND );
+	//const auto moving = vars.aa.moving.enabled.get<bool>() && g_pLocalPlayer->get_flags() & FL_ONGROUND && prediction::get().get_unpred_vel().Length() > 0.1f;
+	//const auto fakewalking = vars.aa.fakewalk.get<bool>() && GetAsyncKeyState( vars.key.fakewalk.get<int>() );
+	//const auto regular = ( !air && !moving ) || ( fakewalking && !air );
+
+	//if ( air ) { type = 2; }
+	//if ( moving ) { type = 1; }
+	//if ( regular ) { type = 0; }
+
+	//if (get_antiaim(type)->at_target->get<bool>())
+	//	do_at_target();
+
+	//do_add();
+
+	//if (!get_antiaim(type)->edge->get<bool>())
+	//	do_freestand();
+
+	//if (get_antiaim(type)->spin->get<bool>())
+	//	do_spin();
+
+	//if (get_antiaim(type)->jitter->get<bool>())
+	//	do_jitter();
+
+	//if (get_antiaim(type)->lby->get<bool>()) // TESTING
+	//	do_lby();
+
+	//g_cmd->viewangles.x = 89.f;
 }
 
 void antiaim::do_spin() const
@@ -536,20 +557,26 @@ void antiaim::do_spin() const
 	//}
 	
 	// note - AkatsukiSun: when i started to reverse this shit, Kamaz released r2p code.
-	float speed = (get_antiaim(type)->spin_speed->get<float>() * 0.01f) * 0.0625f;
-	float distortion_angle = get_antiaim(type)->spin_range->get<float>() * 
-							(1.f - std::powf(1.f - antiaim::get().timer_distortion, 2)) - 
-								(get_antiaim(type)->spin_range->get<float>() * 0.5f);
+	//float speed = (get_antiaim(type)->spin_speed->get<float>() * 0.01f) * 0.0625f;
+	//float distortion_angle = get_antiaim(type)->spin_range->get<float>() * 
+	//						(1.f - std::powf(1.f - antiaim::get().timer_distortion, 2)) - 
+	//							(get_antiaim(type)->spin_range->get<float>() * 0.5f);
 
-	g_cmd->viewangles.y += antiaim::get().switch_distortion ? distortion_angle : -distortion_angle;
+	//g_cmd->viewangles.y += antiaim::get().switch_distortion ? distortion_angle : -distortion_angle;
 
-	// update timer and go back when we at the end if distortion flip
-	antiaim::get().timer_distortion += speed;
-	if (antiaim::get().timer_distortion >= 0.7f)
-	{
-		antiaim::get().timer_distortion = 0.f;
-		antiaim::get().switch_distortion = !antiaim::get().switch_distortion;
-	}
+	//// update timer and go back when we at the end if distortion flip
+	//antiaim::get().timer_distortion += speed;
+	//if (antiaim::get().timer_distortion >= 0.7f)
+	//{
+	//	antiaim::get().timer_distortion = 0.f;
+	//	antiaim::get().switch_distortion = !antiaim::get().switch_distortion;
+	//}
+
+	// note - AkatsukiSun: found it in random supre paste, but its p.
+	float max = 180 * (get_antiaim(type)->spin_range->get<float>() * 0.01f);
+	float min = 0;
+	float speed = 100 - (get_antiaim(type)->spin_speed->get<float>());
+	g_cmd->viewangles.y += std::min(std::max(floor(abs(cos(g_pGlobals->curtime / speed * 100)) * max), min), max) - max / 2;
 }
 
 void antiaim::do_add()

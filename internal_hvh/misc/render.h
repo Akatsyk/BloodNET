@@ -7,9 +7,13 @@
 
 namespace fonts
 {
+	extern std::shared_ptr<c_font> menu_new_font;
+	extern std::shared_ptr<c_font> tab_new_font;
+	extern std::shared_ptr<c_font> subtub_new_font;
 	extern std::shared_ptr<c_font> esp;
 	extern std::shared_ptr<c_font> esp_small;
 	extern std::shared_ptr<c_font> lby;
+	extern std::shared_ptr<c_font> weapon_font;
 	extern std::shared_ptr<c_font> watermarker;
 
 	extern std::shared_ptr<c_font> controlfont;
@@ -56,6 +60,7 @@ public:
 	void circle_filled( Vector2D center, float radius, Color color );
 	void circle_filled_new( Vector2D center, int points, int radius, Color color );
 	void circle_filled_3d(Vector center, int radius, Color color);
+	void DLightCircle3D(Vector vecPosition, int32_t iPointCount, float_t flRadius, Color aColor);
 	void circle_filled_radial_gradient( Vector2D center, float radius, Color color1, Color color2 );
 	void circle_filled_rainbow( Vector2D center, float radius, bool rotate ) const;
 	void draw_arc(Vector2D center, int radius, int start_angle, int percent, int thickness, Color color);

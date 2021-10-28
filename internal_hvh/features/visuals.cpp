@@ -23,6 +23,8 @@ void visuals::render()
 	if (!g_pLocalPlayer)
 		return;
 
+	//misc::get().DrawCircle();
+
 	grenade_pred::get().draw();
 
 	players_esp();
@@ -35,11 +37,13 @@ void visuals::render()
 
 	hitmarker::get().draw_hits();
 
-	aa_indicator();
+	fatality_indicators();
 
-	ping_indicator();
+	//aa_indicator();
+
+	//ping_indicator();
 	
-	lby_indicator();
+	//lby_indicator();
 
 	//antiaim_arrows();
 
@@ -196,19 +200,19 @@ void visuals::player_info( const visual_data_t & player )
 	info_bottom();
 	info_top( player );
 
-	if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
-	{
-		if (!player.player)
-			return;
-		auto dLight = g_pEffects->CL_AllocDlight(player.player->EntIndex());
-		dLight->die = g_pGlobals->curtime + 0.1f;
-		dLight->radius = 200.f;
-		dLight->color = Color(200, 50, 10, 5);
+	//if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
+	//{
+	//	if (!player.player)
+	//		return;
+	//	auto dLight = g_pEffects->CL_AllocDlight(player.player->EntIndex());
+	//	dLight->die = g_pGlobals->curtime + 0.1f;
+	//	dLight->radius = 200.f;
+	//	dLight->color = Color(200, 50, 10, 5);
 
-		dLight->key = player.player->EntIndex();
-		dLight->decay = dLight->radius / 5.0f;
-		dLight->origin = player.player->get_origin() + Vector(0, 0, 2);
-	}
+	//	dLight->key = player.player->EntIndex();
+	//	dLight->decay = dLight->radius / 5.0f;
+	//	dLight->origin = player.player->get_origin() + Vector(0, 0, 2);
+	//}
 }
 
 bool visuals::bar_ping( const visual_data_t& player, int elements ) const
@@ -736,6 +740,9 @@ void visuals::draw_scope()
 	if (!vars.misc.remove_scope.get<bool>())
 		return;
 
+	if (!g_pLocalPlayer || !g_pLocalPlayer->get_alive())
+		return;
+
 	auto observer = g_pLocalPlayer->get_observer();
 	static double alpha = 255.f;
 	if ( observer && observer->get_scoped() || g_pLocalPlayer->get_scoped() )
@@ -850,6 +857,66 @@ void visuals::aa_indicator()
 	//render::get().text( Vector2D((size.Width / 2.f) - 20, (size.Height / 2.f) + 40), text, get_col( vars.aa.indicator_col.get<uintptr_t>() ), fonts::controlfont, c_font::left_aligned | c_font::centered_y | c_font::drop_shadow );
 }
 
+void visuals::fatality_indicators()
+{
+	if (!g_pEngine->IsConnected() || !g_pEngine->IsInGame())
+		return;
+
+	if (!g_pLocalPlayer || !g_pLocalPlayer->get_alive())
+		return;
+
+	const auto nci = g_pEngine->GetNetChannelInfo();
+	if (!nci)
+		return;
+
+	int screen_width, screen_height;
+	g_pEngine->GetScreenSize(screen_width, screen_height);
+
+	static auto draw_bar = [](int x, int y, float val, float max, const wchar_t* name, Color custom_color) {
+		if (val > max)
+			val = max;
+		render::get().filled_box(x, y - 1, 131, 4, Color(50, 50, 50, 150));
+		render::get().filled_box(x, y, 130 * (val / max), 3, Color(custom_color));
+	};
+
+	screen_height -= 200;
+
+	//if (g_cfg.esp.indicatos_mods[2].enabled)
+	{
+		float progress = antiaim::get().next_lby_update - prediction::get().get_curtime();
+
+		render::get().filled_box(10, screen_height - 490, 150, 27, Color(33, 29, 70));
+		render::get().text(Vector2D(75, screen_height - 488), "LBY", Color(255, 255, 255, 255), fonts::esp, c_font::centered_x);
+		render::get().rect_filled_linear_gradient(Vector2D(10, screen_height - 490), Vector2D(150, 3), Color(61, 47, 161, 255), Color(160, 38, 97), true);
+		render::get().rect(Vector2D(10, screen_height - 490), Vector2D(151, 28), Color(58, 54, 85));
+		draw_bar(20, screen_height - 471, progress, 1.1f, L"", Color(208, 46, 94));
+	}
+
+	//if (g_cfg.esp.indicatos_mods[1].enabled)
+	{
+		auto ping = vars.aim.ping_spike_amt.get<float>() / 1000.f;
+		if (!vars.aim.ping_spike.get<bool>())
+			ping = vars.aim.ping_spike_base.get<bool>() ? 160.f : nci->GetLatency(FLOW_INCOMING) / 1000.f;
+		auto multiplier = nci->GetLatency(FLOW_INCOMING) / ping;
+		multiplier = std::clamp(multiplier, 0.f, 1.f);
+
+		render::get().filled_box(10, screen_height - 540, 150, 27, Color(33, 29, 70));
+		render::get().text(Vector2D(75, screen_height - 538), "PING", Color(255, 255, 255, 255), fonts::esp, c_font::centered_x);
+		render::get().rect_filled_linear_gradient(Vector2D(10, screen_height - 540), Vector2D(150, 3), Color(61, 47, 161, 255), Color(160, 38, 97), true);
+		render::get().rect(Vector2D(10, screen_height - 540), Vector2D(151, 28), Color(58, 54, 85));
+		draw_bar(20, screen_height - 521, multiplier, 1.f, L"", Color(208, 46, 94));
+	}
+
+	//if (g_cfg.esp.indicatos_mods[0].enabled)
+	{
+		render::get().filled_box(10, screen_height - 590, 150, 27, Color(33, 29, 70));
+		render::get().text(Vector2D(75, screen_height - 588), "CHOKE", Color(255, 255, 255, 255), fonts::esp, c_font::centered_x);
+		render::get().rect_filled_linear_gradient(Vector2D(10, screen_height - 590), Vector2D(150, 3), Color(61, 47, 161, 255), Color(160, 38, 97), true);
+		render::get().rect(Vector2D(10, screen_height - 590), Vector2D(151, 28), Color(58, 54, 85));
+		draw_bar(20, screen_height - 571, g_pClientState->m_nChokedCommands, 14, L"", Color(208, 46, 94));
+	}
+}
+
 void visuals::ping_indicator()
 {
 	if ( !vars.aim.ping_spike.get<bool>() && !vars.aim.ping_spike_base.get<bool>() || !vars.aim.enabled.get<bool>() || !g_pEngine->IsInGame() )
@@ -869,8 +936,8 @@ void visuals::ping_indicator()
 	const auto green = std::clamp( static_cast< int >( multiplier * 255 ) + 160, 0, 255 );
 
 	const auto size = render::get().get_dimensions();
-	_( ping_s, "SPIKE",);
-	_( pingex_s, "XT" );
+	_( ping_s, "PING",);
+	_( pingex_s, "EXT" );
 	render::get().text( Vector2D( 10, size.Height / 2.f ), vars.aim.ping_spike.get<bool>() ? ping_s : pingex_s, Color( red, green, 0, 255 ), fonts::lby, c_font::left_aligned | c_font::centered_y | c_font::drop_shadow);
 }
 

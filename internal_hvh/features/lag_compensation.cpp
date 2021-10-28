@@ -57,9 +57,27 @@ void lag_record_t::apply( C_CSPlayer* player, bool backup ) const
 	}
 }
 
+__forceinline float calculate_lerp()
+{
+	__(cl_interp_s, "cl_interp");
+	__(cl_updaterate_s, "cl_updaterate");
+	static auto cl_interp = g_pCVar->FindVar(cl_interp_s);
+	static auto cl_updaterate = g_pCVar->FindVar(cl_updaterate_s);
+
+	const auto update_rate = cl_updaterate->get_int();
+	const auto interp_ratio = cl_interp->get_float();
+
+	auto lerp = interp_ratio / update_rate;
+
+	if (lerp <= interp_ratio)
+		lerp = interp_ratio;
+
+	return lerp;
+}
+
 int lagcomp::fix_tickcount( const float& simtime )
 {
-	return time_to_ticks( simtime + get_lerp_time() );
+	return time_to_ticks( simtime + calculate_lerp() );
 }
 
 float lagcomp::get_lerp_time()

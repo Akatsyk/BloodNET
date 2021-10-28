@@ -41,6 +41,7 @@ private:
 	static void draw_scope();
 	static void watermark();
 	static void aa_indicator();
+	static void fatality_indicators();
 	static void ping_indicator();
 	static void lby_indicator();
 	static void antiaim_arrows();

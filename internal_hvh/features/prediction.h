@@ -13,11 +13,14 @@ public:
 	Vector get_unpred_eyepos() const;
 	QAngle unpred_viewangles;
 private:
+	int m_tickbase_backup;
+	int m_flags_backup;
 	float orig_currtime = 0.f;
 	float orig_frametime = 0.f;
 	CMoveData move_data;
 
 	int* m_prediction_random_seed = nullptr;
+	int* m_prediction_player = nullptr;
 	Vector unpred_vel;
 	Vector unpred_eyepos;
 	Vector pred_vel;

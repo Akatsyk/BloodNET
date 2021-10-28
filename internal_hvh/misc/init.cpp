@@ -38,6 +38,7 @@ void init::get_offsets()
 	offsets::local_player = sig( "client.dll", "8B 0D ? ? ? ? 83 FF FF 74 07" ) + 0x2;
 	offsets::move_helper = sig( "client.dll", "8B 0D ? ? ? ? 8B 46 08 68" ) + 0x2;
 	offsets::pred_random_seed = sig( "client.dll", "A3 ? ? ? ? 66 0F 6E 86" ) + 1; //client.dll", "8B 0D ? ? ? ? BA ? ? ? ? E8 ? ? ? ? 83 C4 04
+	offsets::pred_player = sig( "client.dll", "89 35 ? ? ? ? F3 0F 10 48" ) + 0x2;
 	offsets::set_abs_angles = sig( "client.dll", "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8" );
 	offsets::view_render = sig( "client.dll", "FF 50 14 E8 ?? ?? ?? ?? 5D" ) - 0x7;
 	offsets::view_render_bms = sig( "client.dll", "A1 ? ? ? ? 56 8B F1 B9 ? ? ? ? FF 50 08" ) + 0x1;
@@ -54,6 +55,7 @@ void init::get_offsets()
 	offsets::smoke_count = sig( "client.dll", "A3 ? ? ? ? 57 8B CB" ) + 0x1;
 	offsets::get_weapon_name = sig( "client.dll", "55 8B EC 56 8B F1 E8 ? ? ? ? 8B 8E" );
 	offsets::get_sequence_act = sig( "client.dll", "55 8B EC 83 7D 08 FF 56 8B F1 74 3D" );
+	offsets::current_command = sig( "client.dll", "89 BE ? ? ? ? E8 ? ? ? ? 85 FF") + 0x2;
 	offsets::enable_invalidate_bone_cache = *reinterpret_cast< uintptr_t* >( sig("client.dll", "C6 05 ? ? ? ? ? 89 47 70") + 0x2 );
 	offsets::invalidate_physics_recursive = sig( "client.dll", "55 8B EC 83 E4 F8 83 EC 0C 53 8B 5D 08 8B C3 56" );
 	offsets::is_breakable_entity = sig( "client.dll", "55 8B EC 51 56 8B F1 85 F6 74 68" );
@@ -61,7 +63,7 @@ void init::get_offsets()
 	offsets::ccsplayer_vtable = sig( "client.dll", "55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 89 7C 24 0C" ) + 0x47;
 	offsets::cbaseplayeranimstate_vtable = sig( "client.dll", "C7 06 ? ? ? ? E8 ? ? ? ? 8D 8E 84 00 00 00 E8 ? ? ? ? F6 45 08 01 74 0E 68 AC 00 00 00 " ) + 0x2;
 	offsets::netchan_vtable = sig( "engine.dll", "C7 06 ? ? ? ? 8D BE AC 00 00 00" ) + 0x2;
-	offsets::print_dev_console = sig( "engine.dll", "55 8B EC 81 EC 10 08 00 00 80 3D" );
+	offsets::print_dev_console = sig("engine.dll", "55 8B EC 81 EC ? ? ? ? 80 3D ? ? ? ? ? 56 8B 35");
 	offsets::find_element = sig( "client.dll", "55 8B EC 53 8B 5D 08 56 57 8B F9 33 F6 39 77 28" );
 
 	g_pLocalPlayer = *reinterpret_cast< C_locPlayer* >( offsets::local_player );
@@ -243,7 +245,7 @@ void init::hooks()
 	orig_present = device->apply<present_fn>( 17, present );
 	orig_debug_spread_show_get_int = debug_spread_show->apply<get_int_fn>( 13, debug_spread_show_get_int );
 	orig_sv_cheats_get_bool = sv_cheats->apply<get_bool_fn>( 13, sv_cheats_get_bool );
-	orig_net_showfragments_get_bool = net_showfragments->apply<get_bool_fn>( 13, net_showfragments_get_bool );
+	orig_net_showfragments_get_bool = net_showfragments->apply<get_bool_fn>(13, net_showfragments_get_bool);
 	orig_is_hltv = engine->apply<is_hltv_fn>( 93, is_hltv );
 	orig_is_paused = engine->apply<is_paused_fn>( 90, is_paused );
 	orig_paint_traverse = vpanel->apply<paint_traverse_fn>( 41, paint_traverse );

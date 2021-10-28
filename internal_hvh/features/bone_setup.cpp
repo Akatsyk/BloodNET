@@ -105,7 +105,7 @@ bool bone_setup::handle_bone_setup_replace(C_CSPlayer* player, const int max_bon
 	player->build_transformations(hdr, pos, q, parent_transform, bone_mask, &computed[0]);
 
 	// restore original interpolated entity data.
-	//player->get_effects() = backup_effects;
+	player->get_effects() = backup_effects;
 
 	memcpy(bone_out, player->get_bone_accessor()->m_pBones, sizeof(matrix3x4_t) * max_bones);
 

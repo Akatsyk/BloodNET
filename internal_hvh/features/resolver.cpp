@@ -107,7 +107,7 @@ void resolver::resolve(C_CSPlayer* player, lag_record_t* record)
 
 	if (log.m_vecLastNonDormantOrig != record->m_origin && g_pLocalPlayer->get_alive())
 	{
-		log.m_iMode = RMODE_MOVING;//RMODE_WALL;
+		log.m_iMode = RMODE_WALL; // RMODE_MOVING;
 	}
 
 	if (simtime - log.m_flLastLowerBodyYawTargetUpdateTime > 1.35f && log.m_vecLastNonDormantOrig == record->m_origin && log.m_iMode == RMODE_MOVING)
@@ -181,8 +181,6 @@ bool resolver::is_spin(player_log_t* log)
 	log->spindelta = (log->record[0].m_body - log->record[1].m_body) / log->record[1].m_lag;
 	log->spinbody = log->record[0].m_body;
 	const auto delta2 = (log->record[1].m_body - log->record[2].m_body) / log->record[2].m_lag;
-
-	return false;
 
 	return log->spindelta == delta2 && log->spindelta > 0.5f;
 }
@@ -1028,6 +1026,7 @@ void resolver::calc_missed_shots(shot_t* shot)
 	}
 	else
 	{
+		log->m_nSpreadShots++;
 		g_pCVar->ConsoleColorPrintf(Color(51, 171, 249, 255), bloodnet);
 		util::print_dev_console(true, Color(51, 171, 249, 255), miss);
 		util::print_dev_console(true, Color(255, 255, 255, 255), sprd);

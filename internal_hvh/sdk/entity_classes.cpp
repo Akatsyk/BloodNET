@@ -201,6 +201,13 @@ int C_CSPlayer::get_sequence_act( int sequence )
 	return get_sequence_act( this, hdr, sequence );
 }
 
+CUserCmd*& C_CSPlayer::m_pCurrentCommand()
+{
+	static auto current_command = *(uint32_t*)/*reinterpret_cast<uintptr_t*>*/(offsets::current_command);
+
+	return *(CUserCmd**)((uintptr_t)this + current_command);
+}
+
 Vector C_CSPlayer::get_shoot_pos()
 {
 	Vector eye_pos;

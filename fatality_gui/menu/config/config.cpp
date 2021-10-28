@@ -30,6 +30,7 @@ tsl::robin_map< std::string, value* > g_cfg
 { _n( "aim_rslv" ), &vars.aim.resolver },
 { _n( "aim_rslv_tm" ), &vars.aim.resolve_team },
 { _n( "aim_ovr" ), &vars.aim.override },
+//{ _n( "aim_override_dmg" ), &vars.aim.override_damage },
 { _n( "aim_hsonly" ), &vars.aim.hsonly },
 { _n("aim_dtap"), &vars.misc.doubletap },
 { _n( "aim_zs_hc" ), &vars.aim.zeus_hc },
@@ -61,6 +62,7 @@ tsl::robin_map< std::string, value* > g_cfg
 
 { _n( "cfg_au_hc" ), &vars.config.autosniper.hitchance },
 { _n( "cfg_au_mindmg" ), &vars.config.autosniper.mindmg },
+//{ _n( "cfg_au_ov_mindmg" ), &vars.config.autosniper.ov_mindamage },
 { _n( "cfg_au_scale" ), &vars.config.autosniper.scale },
 { _n( "cfg_au_scale_head" ), &vars.config.autosniper.scale_head },
 { _n( "cfg_au_ad_scale" ), &vars.config.autosniper.adaptive_scale },
@@ -75,6 +77,7 @@ tsl::robin_map< std::string, value* > g_cfg
 
 { _n( "cfg_sc_hc" ), &vars.config.scout.hitchance },
 { _n( "cfg_sc_mindmg" ), &vars.config.scout.mindmg },
+//{ _n( "cfg_sc_ov_mindmg" ), &vars.config.scout.ov_mindamage },
 { _n( "cfg_sc_scale" ), &vars.config.scout.scale },
 { _n( "cfg_sc_scale_head" ), &vars.config.scout.scale_head },
 { _n( "cfg_sc_ad_scale" ), &vars.config.scout.adaptive_scale },
@@ -97,6 +100,7 @@ tsl::robin_map< std::string, value* > g_cfg
 
 { _n( "cfg_awp_hc" ), &vars.config.awp.hitchance },
 { _n( "cfg_awp_mindmg" ), &vars.config.awp.mindmg },
+//{ _n( "cfg_awp_ov_mindmg" ), &vars.config.awp.ov_mindamage },
 { _n( "cfg_awp_asc" ), &vars.config.awp.autoscope },
 { _n( "cfg_awp_scale" ), &vars.config.awp.scale },
 { _n( "cfg_awp_scale_head" ), &vars.config.awp.scale_head },
@@ -118,6 +122,7 @@ tsl::robin_map< std::string, value* > g_cfg
 
 { _n( "cfg_hp_hc" ), &vars.config.heavy_pistol.hitchance },
 { _n( "cfg_hp_mindmg" ), &vars.config.heavy_pistol.mindmg },
+//{ _n( "cfg_hp_ov_mindmg" ), &vars.config.heavy_pistol.ov_mindamage },
 { _n( "cfg_hp_scale" ), &vars.config.heavy_pistol.scale },
 { _n( "cfg_hp_scale_head" ), &vars.config.heavy_pistol.scale_head },
 { _n( "cfg_hp_ad_scale" ), &vars.config.heavy_pistol.adaptive_scale },
@@ -139,6 +144,7 @@ tsl::robin_map< std::string, value* > g_cfg
 
 { _n( "cfg_p_hc" ), &vars.config.pistol.hitchance },
 { _n( "cfg_p_mindmg" ), &vars.config.pistol.mindmg },
+//{ _n( "cfg_p_ov_mindmg" ), &vars.config.pistol.ov_mindamage },
 { _n( "cfg_p_scale" ), &vars.config.pistol.scale },
 { _n( "cfg_p_scale_head" ), &vars.config.pistol.scale_head },
 { _n( "cfg_p_ad_scale" ), &vars.config.pistol.adaptive_scale },
@@ -159,6 +165,7 @@ tsl::robin_map< std::string, value* > g_cfg
 
 { _n( "cfg_o_hc" ), &vars.config.other.hitchance },
 { _n( "cfg_o_mindmg" ), &vars.config.other.mindmg },
+//{ _n( "cfg_o_ov_mindmg" ), &vars.config.other.ov_mindamage },
 { _n( "cfg_o_scale" ), &vars.config.other.scale },
 { _n( "cfg_o_scale_head" ), &vars.config.other.scale_head },
 { _n( "cfg_o_ad_scale" ), &vars.config.other.adaptive_scale },
@@ -249,6 +256,7 @@ tsl::robin_map< std::string, value* > g_cfg
 
 
 { _n( "k_au" ), &vars.key.autostop },
+//{ _n( "k_override_dmg" ), &vars.key.override_damage },
 { _n( "k_bm" ), &vars.key.baim },
 { _n( "k_fkwk" ), &vars.key.fakewalk },
 { _n("k_fkdk"), &vars.key.fakeduck },

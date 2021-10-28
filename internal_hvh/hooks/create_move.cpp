@@ -26,18 +26,16 @@ bool __stdcall hooks::create_move(float input_sample_time, CUserCmd* cmd)
 	if (g_unload)
 		return orig_create_move(input_sample_time, cmd);
 
-	if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
-		fake_ping::rehook();
-	else if (!g_pEngine->IsInGame() && !g_pEngine->IsConnected())
-	{
-		fake_ping::unhook();
-		fake_ping::get().sequence_records.clear();
-		g_sequence_rn = 0;
-	}
+	//if (g_pEngine->IsInGame() && g_pEngine->IsConnected())
+	//	fake_ping::rehook();
+	//else if (!g_pEngine->IsInGame() && !g_pEngine->IsConnected())
+	//{
+	//	fake_ping::unhook();
+	//	fake_ping::get().sequence_records.clear();
+	//	g_sequence_rn = 0;
+	//}
 
-	//fake_ping::rehook();
-
-	fake_ping::update_incoming_sequences();
+	fake_ping::rehook();
 
 	misc::get().radar();
 	misc::get().aspectratio();
@@ -58,7 +56,7 @@ bool __stdcall hooks::create_move(float input_sample_time, CUserCmd* cmd)
 		antiaim::get().fakeduck();
 		aimbot::get().run();
 		aimbot::get().no_recoil();
-		misc::get().automaticpeek();
+		misc::get().Instance();
 		g_tickbase.PostMovement();
 	}
 	prediction::get().finish();
@@ -70,11 +68,9 @@ bool __stdcall hooks::create_move(float input_sample_time, CUserCmd* cmd)
 
 	if (!g_pClientState->m_nChokedCommands)
 	{
-		//animations::get().g_radar = cmd->viewangles;
-		//animations::get().g_radar.Normalize();
 		resolver::get().set_last_eye();
 		thirdperson::get().set_tp_angle(cmd->viewangles);
-	}
+	}	
 
 	__(cl_sidespeed_s, "cl_sidespeed");
 	__(cl_forwardspeed_s, "cl_forwardspeed");
@@ -87,12 +83,10 @@ bool __stdcall hooks::create_move(float input_sample_time, CUserCmd* cmd)
 	cmd->forwardmove = clamp(cmd->forwardmove, -cl_forwardspeed->get_float(), cl_forwardspeed->get_float());
 	cmd->upmove = clamp(cmd->upmove, -cl_upspeed->get_float(), cl_upspeed->get_float());
 
-	if (antiaim::get().get_fake_walk_state())
-	{
-		cmd->buttons &= ~IN_MOVERIGHT;
-		cmd->buttons &= ~IN_MOVELEFT;
-		cmd->buttons &= ~IN_FORWARD;
-		cmd->buttons &= ~IN_BACK;
-	}
+	cmd->buttons &= ~IN_MOVERIGHT;
+	cmd->buttons &= ~IN_MOVELEFT;
+	cmd->buttons &= ~IN_FORWARD;
+	cmd->buttons &= ~IN_BACK;
+
 	return false;
 }

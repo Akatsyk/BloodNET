@@ -289,8 +289,8 @@ std::vector<std::string> m_chams_type =
 std::vector<std::string> m_autostop_type =
 {
 	_w( "Off" ),
+	_w( "Fast" ),
 	_w( "Normal" ),
-	_w( "Full" ),
 };
 
 std::vector<std::string> m_spread_type =
@@ -400,9 +400,9 @@ void c_menu::init()
 
 	c_window* main_window = new c_window( _w( "MAIN WINDOW" ), bounds( 100, 100, 860, 600 ), true );
 
-	c_tab* tab_first = main_window->add_tab( _w( "Rage" ) );
+	c_tab* tab_first = main_window->add_tab( _w( "RAGEBOT" ) );
 	{
-		c_subtab* subtab_one = tab_first->add_subtab( _w( "Aimbot" ) );
+		c_subtab* subtab_one = tab_first->add_subtab( _w( "AIMBOT" ) );
 		{
 			subtab_one->add_checkbox( _w( "Enabled" ), _w( "aim" ) );
 			subtab_one->add_checkbox( _w( "Autofire" ), _w( "aim_af" ) );
@@ -422,11 +422,13 @@ void c_menu::init()
 			subtab_one->add_checkbox( _w( "Resolve teammates" ), _w( "aim_rslv_tm" ) );
 			subtab_one->add_checkbox( _w( "Override resolver" ), _w( "aim_ovr" ) );
 			subtab_one->add_keybind( _w( "" ), _w( "k_ovr" ), true );
+			//subtab_one->add_checkbox( _w( "Override damage" ), _w( "aim_override_dmg" ) );
+			//subtab_one->add_keybind( _w( "" ), _w( "k_override_dmg" ), true );
 			subtab_one->add_colorpicker(_w("Shot record"), _w("aim_bot_record"), D3DCOLOR_RGBA(10, 255, 10, 255));
 
 		} tab_first->pushback_subtab( subtab_one );
 
-		c_subtab* subtab_three = tab_first->add_subtab( _w( "Anti-aim" ) );
+		c_subtab* subtab_three = tab_first->add_subtab( _w( "ANTIAIM" ) );
 		{
 			subtab_three->add_checkbox( _w( "Enabled" ), _w( "aa" ) );
 			subtab_three->add_checkbox( _w( "Fake lag when disabed" ), _w( "aa_fk_dis" ) );
@@ -447,14 +449,14 @@ void c_menu::init()
 			subtab_three->add_combobox(_w("Fake angle"), _w("aa_fk_angles"), &m_fake_angles);
 		} tab_first->pushback_subtab( subtab_three );
 
-		c_subtab* subtab_four = tab_first->add_subtab( _w( "AA Regular" ) );
+		c_subtab* subtab_four = tab_first->add_subtab( _w( "STANDING" ) );
 		{
 			subtab_four->add_checkbox( _w( "Enabled" ), _w( "aa_r" ) );
 			subtab_four->add_slider( _w( "Add" ), _w( "aa_r_add" ), -180, 180, _w( "%d °" ) );
 			subtab_four->add_checkbox( _w( "At fov target" ), _w( "aa_r_at_target" ) );
 			subtab_four->add_slider( _w( "Fake lag amount" ), _w( "aa_r_choke" ), 0, 14, _w( "%d ticks" ) );
 			subtab_four->add_checkbox( _w( "Distortion" ), _w( "aa_r_spin" ) );
-			subtab_four->add_slider( _w( "Distortion range" ), _w( "aa_r_spin_range" ), 0.f, 360.f, _w( "%.1f °" ) );
+			subtab_four->add_slider( _w( "Distortion range" ), _w( "aa_r_spin_range" ), 0.f, 180.f, _w( "%.1f °" ) );
 			subtab_four->add_slider( _w( "Distortion speed" ), _w( "aa_r_spin_speed" ), 0.f, 100.f, _w( "%.1f °" ) );
 			subtab_four->add_checkbox( _w( "Freestand" ), _w( "aa_r_freestand" ) );
 			subtab_four->add_checkbox( _w( "Jitter" ), _w( "aa_r_jitter" ) );
@@ -471,14 +473,14 @@ void c_menu::init()
 			subtab_four->add_slider( _w( "Random lby range" ), _w( "aa_r_lby_random_range" ), 0, 360, _w( "%d °" ) );
 		} tab_first->pushback_subtab( subtab_four );
 
-		c_subtab* subtab_five = tab_first->add_subtab( _w( "AA Moving" ) );
+		c_subtab* subtab_five = tab_first->add_subtab( _w( "MOVING" ) );
 		{
 			subtab_five->add_checkbox( _w( "Enabled" ), _w( "aa_m" ) );
 			subtab_five->add_slider( _w( "Add" ), _w( "aa_m_add" ), -180, 180, _w( "%d °" ) );
 			subtab_five->add_checkbox( _w( "At fov target" ), _w( "aa_m_at_target" ) );
 			subtab_five->add_slider( _w( "Fake lag amount" ), _w( "aa_m_choke" ), 0, 14, _w( "%d ticks" ) );
 			subtab_five->add_checkbox( _w( "Distortion" ), _w( "aa_m_spin" ) );
-			subtab_five->add_slider(_w("Distortion range"), _w("aa_m_spin_range"), 0.f, 360.f, _w("%.1f °"));
+			subtab_five->add_slider(_w("Distortion range"), _w("aa_m_spin_range"), 0.f, 180.f, _w("%.1f °"));
 			subtab_five->add_slider( _w( "Distortion speed" ), _w( "aa_m_spin_speed" ), 0.f, 100.f, _w( "%.1f °" ) );
 			subtab_five->add_checkbox( _w( "Freestand" ), _w( "aa_m_freestand" ) );
 			subtab_five->add_checkbox( _w( "Jitter" ), _w( "aa_m_jitter" ) );
@@ -487,14 +489,14 @@ void c_menu::init()
 			subtab_five->add_slider( _w( "Jitter swap" ), _w( "aa_m_jitter_speed" ), 0, 64, _w( "every %d ticks" ) );
 		} tab_first->pushback_subtab( subtab_five );
 
-		c_subtab* subtab_six = tab_first->add_subtab( _w( "AA Air" ) );
+		c_subtab* subtab_six = tab_first->add_subtab( _w( "IN AIR" ) );
 		{
 			subtab_six->add_checkbox( _w( "Enabled" ), _w( "aa_a" ) );
 			subtab_six->add_slider( _w( "Add" ), _w( "aa_a_add" ), -180, 180, _w( "%d °" ) );
 			subtab_six->add_checkbox( _w( "At fov target" ), _w( "aa_a_at_target" ) );
 			subtab_six->add_slider( _w( "Fake lag amount" ), _w( "aa_a_choke" ), 0, 14, _w( "%d ticks" ) );
 			subtab_six->add_checkbox( _w( "Distortion" ), _w( "aa_a_spin" ) );
-			subtab_six->add_slider(_w("Distortion range"), _w("aa_a_spin_range"), 0.f, 360.f, _w("%.1f °"));
+			subtab_six->add_slider(_w("Distortion range"), _w("aa_a_spin_range"), 0.f, 180.f, _w("%.1f °"));
 			subtab_six->add_slider( _w( "Distortion speed" ), _w( "aa_a_spin_speed" ), 0.f, 100.f, _w( "%.1f °" ) );
 			subtab_six->add_checkbox( _w( "Freestand" ), _w( "aa_a_freestand" ) );
 			subtab_six->add_checkbox( _w( "Jitter" ), _w( "aa_a_jitter" ) );
@@ -505,18 +507,19 @@ void c_menu::init()
 
 	} main_window->pushback_tab( tab_first );
 
-	c_tab* tab_second = main_window->add_tab( _w( "Config" ) );
+	c_tab* tab_second = main_window->add_tab( _w( "WEAPON" ) );
 	{
-		c_subtab* subtab_one = tab_second->add_subtab( _w( "Configs" ) );
-		{
-			subtab_one->add_combobox( _w( "Cfg" ), _w( "menu_slot" ), &m_slots );
-			subtab_one->add_button( _w( "Load config" ), load_config );
-			subtab_one->add_button( _w( "Save config" ), save_config, true );
-		} tab_second->pushback_subtab( subtab_one );
-		c_subtab* subtab_two = tab_second->add_subtab( _w( "Auto" ) );
+		//c_subtab* subtab_one = tab_second->add_subtab( _w( "Configs" ) );
+		//{
+		//	subtab_one->add_combobox( _w( "Cfg" ), _w( "menu_slot" ), &m_slots );
+		//	subtab_one->add_button( _w( "Load config" ), load_config );
+		//	subtab_one->add_button( _w( "Save config" ), save_config, true );
+		//} tab_second->pushback_subtab( subtab_one );
+		c_subtab* subtab_two = tab_second->add_subtab( _w( "AUTO" ) );
 		{
 			subtab_two->add_slider( _w( "Minimum hitchance" ), _w( "cfg_au_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_two->add_slider( _w( "Minimum damage" ), _w( "cfg_au_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_two->add_slider(_w("Override damage"), _w("cfg_au_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_two->add_slider( _w( "Hitbox scale head" ), _w( "cfg_au_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_two->add_slider( _w( "Hitbox scale body" ), _w( "cfg_au_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_two->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_au_ad_scale" ) );
@@ -532,10 +535,11 @@ void c_menu::init()
 			//subtab_two->add_keybind(_w(""), _w("k_override_hs"), true);
 
 		} tab_second->pushback_subtab( subtab_two );
-		c_subtab* subtab_three = tab_second->add_subtab( _w( "Scout" ) );
+		c_subtab* subtab_three = tab_second->add_subtab( _w( "SSG" ) );
 		{
 			subtab_three->add_slider( _w( "Minimum hitchance" ), _w( "cfg_sc_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_three->add_slider( _w( "Minimum damage" ), _w( "cfg_sc_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_three->add_slider(_w("Override damage"), _w("cfg_sc_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_three->add_slider( _w( "Hitbox scale head" ), _w( "cfg_sc_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_three->add_slider( _w( "Hitbox scale body" ), _w( "cfg_sc_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_three->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_sc_ad_scale" ) );
@@ -556,6 +560,7 @@ void c_menu::init()
 		{
 			subtab_four->add_slider( _w( "Minimum hitchance" ), _w( "cfg_awp_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_four->add_slider( _w( "Minimum damage" ), _w( "cfg_awp_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_four->add_slider(_w("Override damage"), _w("cfg_awp_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_four->add_slider( _w( "Hitbox scale head" ), _w( "cfg_awp_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_four->add_slider( _w( "Hitbox scale body" ), _w( "cfg_awp_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_four->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_awp_ad_scale" ) );
@@ -571,10 +576,11 @@ void c_menu::init()
 			//subtab_four->add_keybind(_w(""), _w("k_override_hs"), true);
 
 		} tab_second->pushback_subtab( subtab_four );
-		c_subtab* subtab_five = tab_second->add_subtab( _w( "Heavy pistols" ) );
+		c_subtab* subtab_five = tab_second->add_subtab( _w( "HEAVY PISTOLS" ) );
 		{
 			subtab_five->add_slider( _w( "Minimum hitchance" ), _w( "cfg_hp_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_five->add_slider( _w( "Minimum damage" ), _w( "cfg_hp_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_five->add_slider(_w("Override damage"), _w("cfg_hp_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_five->add_slider( _w( "Hitbox scale head" ), _w( "cfg_hp_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_five->add_slider( _w( "Hitbox scale body" ), _w( "cfg_hp_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_five->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_hp_ad_scale" ) );
@@ -590,10 +596,11 @@ void c_menu::init()
 			//subtab_five->add_keybind(_w(""), _w("k_override_hs"), true);
 
 		} tab_second->pushback_subtab( subtab_five );
-		c_subtab* subtab_six = tab_second->add_subtab( _w( "Pistols" ) );
+		c_subtab* subtab_six = tab_second->add_subtab( _w( "PISTOLS" ) );
 		{
 			subtab_six->add_slider( _w( "Minimum hitchance" ), _w( "cfg_p_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_six->add_slider( _w( "Minimum damage" ), _w( "cfg_p_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_six->add_slider(_w("Override damage"), _w("cfg_p_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_six->add_slider( _w( "Hitbox scale head" ), _w( "cfg_p_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_six->add_slider( _w( "Hitbox scale body" ), _w( "cfg_p_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_six->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_p_ad_scale" ) );
@@ -608,10 +615,11 @@ void c_menu::init()
 			//subtab_six->add_keybind(_w(""), _w("k_override_hs"), true);
 
 		} tab_second->pushback_subtab( subtab_six );
-		c_subtab* subtab_seven = tab_second->add_subtab( _w( "Other" ) );
+		c_subtab* subtab_seven = tab_second->add_subtab( _w( "OTHER" ) );
 		{
 			subtab_seven->add_slider( _w( "Minimum hitchance" ), _w( "cfg_o_hc" ), 0.f, 100.f, _w( "%.2f %%" ) );
 			subtab_seven->add_slider( _w( "Minimum damage" ), _w( "cfg_o_mindmg" ), 0.0f, 100.f, _w( "%.2f dmg" ) );
+			//subtab_seven->add_slider(_w("Override damage"), _w("cfg_o_ov_mindmg"), 0.0f, 100.f, _w("%.2f dmg"));
 			subtab_seven->add_slider( _w( "Hitbox scale head" ), _w( "cfg_o_scale_head" ), 20, 100, _w( "%d %%" ) );
 			subtab_seven->add_slider( _w( "Hitbox scale body" ), _w( "cfg_o_scale" ), 20, 100, _w( "%d %%" ) );
 			subtab_seven->add_checkbox( _w( "Adaptive scale" ), _w( "cfg_o_ad_scale" ) );
@@ -629,9 +637,9 @@ void c_menu::init()
 		} tab_second->pushback_subtab( subtab_seven );
 	} main_window->pushback_tab( tab_second );
 
-	c_tab* tab_third = main_window->add_tab( _w( "Visuals" ) );
+	c_tab* tab_third = main_window->add_tab( _w( "VISUALS" ) );
 	{
-		c_subtab* subtab_one = tab_third->add_subtab( _w( "Chams" ) );
+		c_subtab* subtab_one = tab_third->add_subtab( _w( "CHAMS" ) );
 		{
 			subtab_one->add_checkbox( _w( "Enabled" ), _w( "v_ch" ) );
 			subtab_one->add_checkbox( _w( "Extend" ), _w( "v_ch_xt" ) );
@@ -657,7 +665,7 @@ void c_menu::init()
 			subtab_one->add_colorpicker( _w( "Pearlescent" ), _w( "v_ch_loc_cl_sh" ), D3DCOLOR_RGBA( 100, 50, 150, 255 ) );
 		} tab_third->pushback_subtab( subtab_one );
 
-		c_subtab* subtab_two = tab_third->add_subtab( _w( "Esp" ) );
+		c_subtab* subtab_two = tab_third->add_subtab( _w( "ESP" ) );
 		{
 			subtab_two->add_checkbox( _w( "Box" ), _w( "v_box" ) );
 			subtab_two->add_colorpicker( _w( "" ), _w( "v_box_cl" ), D3DCOLOR_RGBA( 100, 50, 150, 255 ), true );
@@ -678,7 +686,7 @@ void c_menu::init()
 			subtab_two->add_colorpicker( _w( "" ), _w( "v_w_cl" ), D3DCOLOR_RGBA( 255, 255, 255, 255 ), true );
 		} tab_third->pushback_subtab( subtab_two );
 
-		c_subtab* subtab_three = tab_third->add_subtab( _w( "Glow" ) );
+		c_subtab* subtab_three = tab_third->add_subtab( _w( "GLOW" ) );
 		{
 			subtab_three->add_checkbox( _w( "Enable" ), _w( "v_gl" ) );
 			subtab_three->add_checkbox( _w( "Team" ), _w( "v_gl_t" ) );
@@ -691,7 +699,7 @@ void c_menu::init()
 			subtab_three->add_colorpicker( _w( "" ), _w( "v_gl_w_cl" ), D3DCOLOR_RGBA( 100, 50, 150, 255 ), true, true );
 		} tab_third->pushback_subtab( subtab_three );
 
-		c_subtab* subtab_four = tab_third->add_subtab( _w( "Misc" ) );
+		c_subtab* subtab_four = tab_third->add_subtab( _w( "MISC" ) );
 		{
 
 			subtab_four->add_checkbox( _w( "Enable beams" ), _w( "v_bms" ) );
@@ -719,9 +727,9 @@ void c_menu::init()
 
 	} main_window->pushback_tab( tab_third );
 
-	c_tab* tab_fourth = main_window->add_tab( _w( "Gameplay" ) );
+	c_tab* tab_fourth = main_window->add_tab( _w( "GAMEPLAY" ) );
 	{
-		c_subtab* subtab_one = tab_fourth->add_subtab( _w( "Visual" ) );
+		c_subtab* subtab_one = tab_fourth->add_subtab( _w( "MAIN" ) );
 		{
 			subtab_one->add_checkbox( _w( "Thirdperson" ), _w( "m_tp" ) );
 			subtab_one->add_keybind( _w( "" ), _w( "k_tp" ), true );
@@ -746,7 +754,7 @@ void c_menu::init()
 			subtab_one->add_checkbox( _w( "Clan tag" ), _w( "m_cltg" ) );
 			subtab_one->add_checkbox( _w( "Preserve Deathnotices" ), _w( "m_prsrv" ) );
 		} tab_fourth->pushback_subtab( subtab_one );
-		c_subtab* subtab_two = tab_fourth->add_subtab( _w( "Movement" ) );
+		c_subtab* subtab_two = tab_fourth->add_subtab( _w( "MOVEMENT" ) );
 		{
 			subtab_two->add_checkbox( _w( "Bhop" ), _w( "m_bhp" ) );
 			subtab_two->add_checkbox( _w( "Autostrafer" ), _w( "m_strf" ) );
@@ -759,16 +767,18 @@ void c_menu::init()
 		} tab_fourth->pushback_subtab( subtab_two );
 	} main_window->pushback_tab( tab_fourth );
 
-	c_tab* tab_five = main_window->add_tab( _w( "BloodNET" ) );
+	c_tab* tab_fifth = main_window->add_tab(_w("CONFIG"));
 	{
-		c_subtab* subtab_one = tab_five->add_subtab(_w("Update"));
+		c_subtab* subtab_one = tab_fifth->add_subtab( _w( "CONFIG" ) );
 		{
-			subtab_one->add_button(_w("Added AutoPeek"), update_log);
-			subtab_one->add_button(_w("Added Distortion"), update_log);
-			subtab_one->add_button(_w("Added Dormant ESP"), update_log);
-			subtab_one->add_button(_w("Added DLight ESP"), update_log);
-		} tab_five->pushback_subtab(subtab_one);
-	} main_window->pushback_tab( tab_five );
+			subtab_one->add_combobox( _w( "Cfg" ), _w( "menu_slot" ), &m_slots );
+			subtab_one->add_button( _w( "Load config" ), load_config );
+			subtab_one->add_button( _w( "Save config" ), save_config, true );
+		} tab_fifth->pushback_subtab( subtab_one );	
+		c_subtab* subtab_two = tab_fifth->add_subtab( _w( "LUA" ) );
+		{
+		} tab_fifth->pushback_subtab(subtab_two);
+	} main_window->pushback_tab(tab_fifth);
 
 	this->m_windows.push_back( main_window );
 
